@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrintForge AI — 3D Manufacturing & AI Hub</title>
+  <meta name="description" content="Profesyonel 3D baskı hizmetleri, AI destekli tasarım analizi ve interaktif model görüntüleyici ile geleceğin üretimine adım atın." />
+  <meta name="theme-color" content="#050B18" />
+
+  <!-- Preconnect fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN (will replace with PostCSS in later step) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Main entry -->
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <!-- App Shell -->
+  <div id="app">
+
+    <!-- ═══════════════════ NAVBAR ═══════════════════ -->
+    <nav id="navbar" aria-label="Ana Navigasyon">
+      <div class="nav-container">
+        <!-- Logo -->
+        <a href="#hero" class="nav-logo" id="nav-logo" aria-label="PrintForge AI - Ana Sayfa">
+          <div class="nav-logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <span class="nav-logo-text">Print<span class="nav-logo-accent">Forge</span></span>
+        </a>
+
+        <!-- Desktop Links -->
+        <div class="nav-links" id="nav-links" role="menubar">
+          <a href="#features" class="nav-link" role="menuitem">Özellikler</a>
+          <a href="#shop"     class="nav-link" role="menuitem">Mağaza</a>
+          <a href="#viewer"   class="nav-link" role="menuitem">3D Viewer</a>
+          <a href="#ai"       class="nav-link" role="menuitem">AI Asistan</a>
+          <a href="#contact"  class="nav-link" role="menuitem">İletişim</a>
+        </div>
+
+        <!-- Right Actions -->
+        <div class="nav-actions">
+          <button class="nav-signin" id="nav-signin">Giriş Yap</button>
+          <button class="btn-primary nav-cta" id="nav-cta">Ücretsiz Başla</button>
+
+          <!-- Mobile Hamburger -->
+          <button class="hamburger" id="hamburger-btn" aria-label="Menüyü Aç" aria-expanded="false" aria-controls="mobile-menu">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="nav-progress" id="nav-progress" aria-hidden="true"></div>
+    </nav>
+
+    <!-- ═══════════════ MOBILE SIDEBAR ═══════════════ -->
+    <div class="mobile-overlay" id="mobile-overlay" aria-hidden="true"></div>
+    <aside class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobil Menü" aria-modal="true">
+      <div class="mobile-menu-header">
+        <span class="nav-logo-text" style="font-family:'Orbitron',sans-serif; font-weight:700;">Print<span style="color:#00E5FF">Forge</span></span>
+        <button class="mobile-close" id="mobile-close-btn" aria-label="Menüyü Kapat">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <nav class="mobile-nav" role="navigation">
+        <a href="#features" class="mobile-nav-item" data-mobile-link>
+          <div class="mobile-nav-icon" style="background:rgba(0,229,255,0.1); border-color:rgba(0,229,255,0.3);">
+            <svg width="16" height="16" fill="none" stroke="#00E5FF" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="mobile-nav-label">Özellikler</div>
+            <div class="mobile-nav-desc">Platform yetenekleri</div>
+          </div>
+          <svg class="mobile-nav-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+
+        <a href="#shop" class="mobile-nav-item" data-mobile-link>
+          <div class="mobile-nav-icon" style="background:rgba(123,47,255,0.1); border-color:rgba(123,47,255,0.3);">
+            <svg width="16" height="16" fill="none" stroke="#7B2FFF" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </div>
+          <div>
+            <div class="mobile-nav-label">Mağaza</div>
+            <div class="mobile-nav-desc">500+ hazır model</div>
+          </div>
+          <svg class="mobile-nav-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+
+        <a href="#viewer" class="mobile-nav-item" data-mobile-link>
+          <div class="mobile-nav-icon" style="background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3);">
+            <svg width="16" height="16" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="4"/></svg>
+          </div>
+          <div>
+            <div class="mobile-nav-label">3D Viewer</div>
+            <div class="mobile-nav-desc">İnteraktif model önizleme</div>
+          </div>
+          <svg class="mobile-nav-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+
+        <a href="#ai" class="mobile-nav-item" data-mobile-link>
+          <div class="mobile-nav-icon" style="background:rgba(251,191,36,0.1); border-color:rgba(251,191,36,0.3);">
+            <svg width="16" height="16" fill="none" stroke="#FBBF24" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+          <div>
+            <div class="mobile-nav-label">AI Asistan</div>
+            <div class="mobile-nav-desc">Akıllı tasarım analizi</div>
+          </div>
+          <svg class="mobile-nav-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+
+        <a href="#contact" class="mobile-nav-item" data-mobile-link>
+          <div class="mobile-nav-icon" style="background:rgba(139,154,178,0.1); border-color:rgba(139,154,178,0.3);">
+            <svg width="16" height="16" fill="none" stroke="#8B9AB2" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div>
+            <div class="mobile-nav-label">İletişim</div>
+            <div class="mobile-nav-desc">Bize ulaşın</div>
+          </div>
+          <svg class="mobile-nav-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </nav>
+
+      <!-- Mobile CTA -->
+      <div class="mobile-menu-footer">
+        <button class="btn-primary" style="width:100%; padding: 14px; border-radius:12px; font-size:0.95rem;" id="mobile-cta">
+          Ücretsiz Başla
+        </button>
+        <button class="btn-secondary" style="width:100%; padding: 14px; border-radius:12px; font-size:0.95rem; margin-top:10px;" id="mobile-signin">
+          Giriş Yap
+        </button>
+
+        <!-- Social Links -->
+        <div class="mobile-social">
+          <a href="#" class="mobile-social-btn" aria-label="Twitter/X">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="#" class="mobile-social-btn" aria-label="Instagram">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+          </a>
+          <a href="#" class="mobile-social-btn" aria-label="GitHub">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══════════════ PAGE SECTIONS ═══════════════ -->
+    <main id="main-content">
+
+      <!-- Hero Section -->
+      <section id="hero" class="hero-section">
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+          <!-- Left: Text -->
+          <div class="hero-left" id="hero-left">
+            <div class="hero-badge" id="hero-badge">
+              <span class="hero-badge-dot"></span>
+              AI-Powered 3D Manufacturing Platform
+            </div>
+
+            <h1 class="hero-title" id="hero-title">
+              <span class="hero-title-line">Geleceğin</span>
+              <span class="hero-title-line gradient-text">Üretimini</span>
+              <span class="hero-title-line">Şekillendirin</span>
+            </h1>
+
+            <p class="hero-subtitle" id="hero-subtitle">
+              AI destekli 3D baskı platformuyla fikirlerinizi gerçeğe dönüştürün.
+              <strong class="hero-subtitle-em">Anında önizleme</strong>, akıllı malzeme analizi ve
+              <strong class="hero-subtitle-accent">profesyonel üretim</strong> tek çatı altında.
+            </p>
+
+            <div class="hero-stats" id="hero-stats">
+              <div class="stat">
+                <span class="stat-value" data-count="500" data-suffix="+">500+</span>
+                <span class="stat-label">Hazır Model</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-value">48h</span>
+                <span class="stat-label">Hızlı Teslimat</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-value">AI</span>
+                <span class="stat-label">Tasarım Analizi</span>
+              </div>
+            </div>
+
+            <div class="hero-cta" id="hero-cta">
+              <button class="btn-primary btn-lg" id="btn-explore">
+                <span>Keşfetmeye Başla</span>
+                <svg class="btn-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+              <button class="btn-secondary btn-lg" id="btn-ai">
+                <span class="btn-pulse-dot"></span>
+                <span>AI ile Tasarla</span>
+              </button>
+            </div>
+
+            <div class="hero-trust" id="hero-trust">
+              <div class="trust-avatars">
+                <div class="avatar" style="background:linear-gradient(135deg,#00E5FF,#7B2FFF)">AK</div>
+                <div class="avatar" style="background:linear-gradient(135deg,#7B2FFF,#ec4899)">MT</div>
+                <div class="avatar" style="background:linear-gradient(135deg,#34D399,#00E5FF)">SF</div>
+                <div class="avatar" style="background:#112236;color:#8B9AB2">+97</div>
+              </div>
+              <div class="trust-text">
+                <div class="trust-stars">
+                  ★★★★★ <strong>4.9</strong>
+                </div>
+                <div class="trust-count">100+ müşteri yorumu</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: 3D Viewer Card -->
+          <div class="hero-right" id="hero-right">
+            <div class="viewer-card-wrapper">
+              <div class="viewer-card">
+                <canvas id="mini-viewer"></canvas>
+                <!-- Top HUD -->
+                <div class="viewer-hud-top">
+                  <div class="viewer-live-badge">
+                    <span class="viewer-live-dot"></span>
+                    LIVE PREVIEW
+                  </div>
+                  <div class="viewer-controls">
+                    <button class="viewer-ctrl-btn" title="Tam Ekran" id="viewer-fullscreen">
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+                    </button>
+                    <button class="viewer-ctrl-btn" title="Wireframe" id="viewer-wireframe">
+                      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <!-- Bottom Info Panel -->
+                <div class="viewer-info-panel">
+                  <div class="viewer-info-top">
+                    <div class="viewer-model-name">
+                      Drone Gövdesi v2.1
+                      <span class="viewer-model-tag">PLA+</span>
+                    </div>
+                    <div class="viewer-price">₺280</div>
+                  </div>
+                  <div class="viewer-dims">124.3 × 89.7 × 45.2 mm</div>
+                  <div class="viewer-bars">
+                    <div class="viewer-bar-row">
+                      <span class="viewer-bar-label">Doluluk</span>
+                      <div class="viewer-bar-track">
+                        <div class="viewer-bar-fill" style="width:80%; background:linear-gradient(90deg,#00E5FF,#7B2FFF)"></div>
+                      </div>
+                      <span class="viewer-bar-val" style="color:#00E5FF">80%</span>
+                    </div>
+                    <div class="viewer-bar-row">
+                      <span class="viewer-bar-label">Dayanım</span>
+                      <div class="viewer-bar-track">
+                        <div class="viewer-bar-fill" style="width:75%; background:linear-gradient(90deg,#34D399,#00E5FF)"></div>
+                      </div>
+                      <span class="viewer-bar-val" style="color:#34D399">75%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Floating AI bubble -->
+              <div class="ai-float-bubble" id="ai-bubble">
+                <div class="ai-bubble-avatar">
+                  <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                  </svg>
+                </div>
+                <div class="ai-bubble-content">
+                  <div class="ai-bubble-name">PrintForge AI</div>
+                  <p class="ai-bubble-msg" id="ai-bubble-msg">PLA+ ile optimal sonuç alırsınız. <em style="color:#00E5FF;font-style:normal;">%20 infill</em> dayanım için yeterli. 🎯</p>
+                </div>
+              </div>
+
+              <!-- Score badge -->
+              <div class="score-badge">
+                <div class="score-badge-label">AI Score</div>
+                <div class="score-badge-value">9.4</div>
+                <div class="score-badge-sub">Printability</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator" id="scroll-indicator">
+          <span class="scroll-label">Keşfet</span>
+          <div class="scroll-line"></div>
+          <div class="scroll-mouse">
+            <div class="scroll-dot"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section id="features" class="section">
+        <div class="container">
+          <div class="section-header reveal">
+            <div class="section-pill" style="color:#00E5FF;border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">Neden PrintForge?</div>
+            <h2 class="section-title">Her Şey <span class="gradient-text">Tek Platformda</span></h2>
+            <p class="section-desc">Tasarımdan üretime, AI analizinden kapı teslimatına kadar eksiksiz bir 3D üretim ekosistemi.</p>
+          </div>
+
+          <div class="features-grid">
+            <div class="feature-card reveal" style="--i:0">
+              <div class="feature-icon" style="background:rgba(0,229,255,0.08);border-color:rgba(0,229,255,0.25)">
+                <svg width="22" height="22" fill="none" stroke="#00E5FF" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              </div>
+              <h3 class="feature-title">E-Ticaret Mağazası</h3>
+              <p class="feature-desc">500+ hazır 3D parça. Anında satın al, hızlı teslimat. Premium kalite güvencesi.</p>
+              <div class="feature-link" style="color:#00E5FF">Keşfet →</div>
+            </div>
+
+            <div class="feature-card reveal" style="--i:1">
+              <div class="feature-icon" style="background:rgba(123,47,255,0.08);border-color:rgba(123,47,255,0.25)">
+                <svg width="22" height="22" fill="none" stroke="#7B2FFF" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <h3 class="feature-title">Özel Üretim</h3>
+              <p class="feature-desc">STL, OBJ dosyanızı yükleyin. Önizleyin, parametrelerinizi ayarlayın, sipariş verin.</p>
+              <div class="feature-link" style="color:#7B2FFF">Dosya Yükle →</div>
+            </div>
+
+            <div class="feature-card reveal" style="--i:2">
+              <div class="feature-icon" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.25)">
+                <svg width="22" height="22" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
+              <h3 class="feature-title">3D İnteraktif Viewer</h3>
+              <p class="feature-desc">WebGL tabanlı gerçek zamanlı 3D görüntüleme. Döndür, yakınlaştır, incele.</p>
+              <div class="feature-link" style="color:#34D399">Viewer'ı Aç →</div>
+            </div>
+
+            <div class="feature-card reveal" style="--i:3">
+              <div class="feature-icon" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.25)">
+                <svg width="22" height="22" fill="none" stroke="#FBBF24" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+              </div>
+              <h3 class="feature-title">AI Tasarım Asistanı</h3>
+              <p class="feature-desc">Doğal dille tasarım isteyin. AI, baskılabilirlik analizi ve malzeme önerileri sunar.</p>
+              <div class="feature-link" style="color:#FBBF24">AI'a Sor →</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Process Section -->
+      <section id="process" class="section section-alt">
+        <div class="container">
+          <div class="section-header reveal">
+            <div class="section-pill" style="color:#9B5FFF;border-color:rgba(123,47,255,0.2);background:rgba(123,47,255,0.05)">Nasıl Çalışır?</div>
+            <h2 class="section-title">4 Adımda <span class="gradient-text">Üretim</span></h2>
+          </div>
+          <div class="process-grid">
+            <div class="process-step reveal" style="--i:0">
+              <div class="process-num" style="border-color:rgba(0,229,255,0.5);box-shadow:0 0 25px rgba(0,229,255,0.15)">
+                <span style="color:#00E5FF">01</span>
+              </div>
+              <div class="process-line-connector"></div>
+              <h4 class="process-title">Tasarım Seç / Yükle</h4>
+              <p class="process-desc">Mağazadan hazır parça seç ya da kendi STL dosyanı yükle.</p>
+            </div>
+            <div class="process-step reveal" style="--i:1">
+              <div class="process-num" style="border-color:rgba(123,47,255,0.5);box-shadow:0 0 25px rgba(123,47,255,0.15)">
+                <span style="color:#7B2FFF">02</span>
+              </div>
+              <div class="process-line-connector"></div>
+              <h4 class="process-title">AI Analizi</h4>
+              <p class="process-desc">AI asistan malzeme, doluluk ve yapısal dayanım önerilerini sunar.</p>
+            </div>
+            <div class="process-step reveal" style="--i:2">
+              <div class="process-num" style="border-color:rgba(52,211,153,0.5);box-shadow:0 0 20px rgba(52,211,153,0.12)">
+                <span style="color:#34D399">03</span>
+              </div>
+              <div class="process-line-connector"></div>
+              <h4 class="process-title">Sipariş Ver</h4>
+              <p class="process-desc">Parametrelerini onayla, güvenli ödeme yap. Baskı başlasın.</p>
+            </div>
+            <div class="process-step reveal" style="--i:3">
+              <div class="process-num" style="border-color:rgba(251,191,36,0.5);box-shadow:0 0 20px rgba(251,191,36,0.12)">
+                <span style="color:#FBBF24">04</span>
+              </div>
+              <h4 class="process-title">Kapıda Teslim</h4>
+              <p class="process-desc">48 saat içinde paketlenmiş, kalite kontrollü parçan kapında.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Placeholder Sections -->
+      <section id="shop" class="section">
+        <div class="container">
+          <div class="coming-soon-card reveal" style="--accent:#00E5FF">
+            <div class="section-pill" style="color:#00E5FF;border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">Coming Soon — Adım 3</div>
+            <h2 class="section-title">E-Ticaret Mağazası</h2>
+            <p class="section-desc">Ürün kataloğu, filtreleme, sepet sistemi ve entegre 3D preview.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="viewer" class="section section-alt">
+        <div class="container">
+          <div class="coming-soon-card reveal" style="--accent:#7B2FFF">
+            <div class="section-pill" style="color:#9B5FFF;border-color:rgba(123,47,255,0.2);background:rgba(123,47,255,0.05)">Coming Soon — Adım 4</div>
+            <h2 class="section-title">3D İnteraktif Viewer</h2>
+            <p class="section-desc">Three.js ile tam STL/OBJ desteği, OrbitControls, wireframe toggle.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="ai" class="section">
+        <div class="container">
+          <div class="coming-soon-card reveal" style="--accent:#FBBF24">
+            <div class="section-pill" style="color:#FBBF24;border-color:rgba(251,191,36,0.2);background:rgba(251,191,36,0.05)">Coming Soon — Adım 6</div>
+            <h2 class="section-title">AI Asistan Chat</h2>
+            <p class="section-desc">Doğal dil ile 3D tasarım analizi, malzeme önerileri ve teknik raporlar.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="site-footer">
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <div class="nav-logo-icon" style="width:32px;height:32px;border-radius:8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <span style="font-family:'Orbitron',sans-serif;font-weight:700">Print<span style="color:#00E5FF">Forge</span></span>
+          </div>
+          <p class="footer-copy">© 2026 PrintForge AI. Tüm hakları saklıdır.</p>
+          <div class="footer-links">
+            <a href="#" class="footer-link">Gizlilik</a>
+            <a href="#" class="footer-link">Kullanım Koşulları</a>
+            <a href="#" class="footer-link">İletişim</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- Toast notification container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
