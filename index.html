@@ -10,7 +10,7 @@
   <!-- Preconnect fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CDN (will replace with PostCSS in later step) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -28,7 +28,7 @@
         <!-- Logo -->
         <a href="#hero" class="nav-logo" id="nav-logo" aria-label="CustomShape3D - Ana Sayfa">
           <div class="nav-logo-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--void)" stroke="var(--void)" stroke-width="2.5" aria-hidden="true">
               <path d="M12 2L2 7l10 5 10-5-10-5z"/>
               <path d="M2 17l10 5 10-5"/>
               <path d="M2 12l10 5 10-5"/>
@@ -68,7 +68,7 @@
     <div class="mobile-overlay" id="mobile-overlay" aria-hidden="true"></div>
     <aside class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Mobil Menü" aria-modal="true">
       <div class="mobile-menu-header">
-        <span class="nav-logo-text" style="font-family:'Orbitron',sans-serif; font-weight:700;">Custom<span style="color:#00E5FF">Shape3D</span></span>
+        <span class="nav-logo-text" style="font-weight:800;">Custom<span style="color:var(--muted)">Shape3D</span></span>
         <button class="mobile-close" id="mobile-close-btn" aria-label="Menüyü Kapat">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M18 6L6 18M6 6l12 12"/>
@@ -78,8 +78,8 @@
 
       <nav class="mobile-nav" role="navigation">
         <a href="#features" class="mobile-nav-item" data-mobile-link>
-          <div class="mobile-nav-icon" style="background:rgba(0,229,255,0.1); border-color:rgba(0,229,255,0.3);">
-            <svg width="16" height="16" fill="none" stroke="#00E5FF" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <div class="mobile-nav-icon" style="background:rgba(237,237,237,0.1); border-color:rgba(237,237,237,0.3);">
+            <svg width="16" height="16" fill="none" stroke="#EDEDED" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           </div>
           <div>
             <div class="mobile-nav-label">Özellikler</div>
@@ -89,8 +89,8 @@
         </a>
 
         <a href="#shop" class="mobile-nav-item" data-mobile-link>
-          <div class="mobile-nav-icon" style="background:rgba(123,47,255,0.1); border-color:rgba(123,47,255,0.3);">
-            <svg width="16" height="16" fill="none" stroke="#7B2FFF" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <div class="mobile-nav-icon" style="background:rgba(161,161,170,0.1); border-color:rgba(161,161,170,0.3);">
+            <svg width="16" height="16" fill="none" stroke="#A1A1AA" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
           </div>
           <div>
             <div class="mobile-nav-label">Mağaza</div>
@@ -203,13 +203,13 @@
             </div>
 
             <div class="hero-cta" id="hero-cta">
-              <button class="btn-primary btn-lg" id="btn-explore">
+              <button class="btn-primary btn-lg" id="btn-explore" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">
                 <span>Keşfetmeye Başla</span>
                 <svg class="btn-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
                 </svg>
               </button>
-              <button class="btn-secondary btn-lg" id="btn-ai">
+              <button class="btn-secondary btn-lg" id="btn-ai" onclick="document.getElementById('ai').scrollIntoView({behavior:'smooth'})">
                 <span class="btn-pulse-dot"></span>
                 <span>AI ile Tasarla</span>
               </button>
@@ -217,9 +217,9 @@
 
             <div class="hero-trust" id="hero-trust">
               <div class="trust-avatars">
-                <div class="avatar" style="background:linear-gradient(135deg,#00E5FF,#7B2FFF)">AK</div>
-                <div class="avatar" style="background:linear-gradient(135deg,#7B2FFF,#ec4899)">MT</div>
-                <div class="avatar" style="background:linear-gradient(135deg,#34D399,#00E5FF)">SF</div>
+                <div class="avatar" style="background:linear-gradient(135deg,#EDEDED,#A1A1AA)">AK</div>
+                <div class="avatar" style="background:linear-gradient(135deg,#A1A1AA,#ec4899)">MT</div>
+                <div class="avatar" style="background:linear-gradient(135deg,#34D399,#EDEDED)">SF</div>
                 <div class="avatar" style="background:#112236;color:#8B9AB2">+97</div>
               </div>
               <div class="trust-text">
@@ -265,14 +265,14 @@
                     <div class="viewer-bar-row">
                       <span class="viewer-bar-label">Doluluk</span>
                       <div class="viewer-bar-track">
-                        <div class="viewer-bar-fill" style="width:80%; background:linear-gradient(90deg,#00E5FF,#7B2FFF)"></div>
+                        <div class="viewer-bar-fill" style="width:80%; background:linear-gradient(90deg,#EDEDED,#A1A1AA)"></div>
                       </div>
-                      <span class="viewer-bar-val" style="color:#00E5FF">80%</span>
+                      <span class="viewer-bar-val" style="color:#EDEDED">80%</span>
                     </div>
                     <div class="viewer-bar-row">
                       <span class="viewer-bar-label">Dayanım</span>
                       <div class="viewer-bar-track">
-                        <div class="viewer-bar-fill" style="width:75%; background:linear-gradient(90deg,#34D399,#00E5FF)"></div>
+                        <div class="viewer-bar-fill" style="width:75%; background:linear-gradient(90deg,#34D399,#EDEDED)"></div>
                       </div>
                       <span class="viewer-bar-val" style="color:#34D399">75%</span>
                     </div>
@@ -289,7 +289,7 @@
                 </div>
                 <div class="ai-bubble-content">
                   <div class="ai-bubble-name">CustomShape3D AI</div>
-                  <p class="ai-bubble-msg" id="ai-bubble-msg">PLA+ ile optimal sonuç alırsınız. <em style="color:#00E5FF;font-style:normal;">%20 infill</em> dayanım için yeterli. 🎯</p>
+                  <p class="ai-bubble-msg" id="ai-bubble-msg">PLA+ ile optimal sonuç alırsınız. <em style="color:#EDEDED;font-style:normal;">%20 infill</em> dayanım için yeterli. 🎯</p>
                 </div>
               </div>
 
@@ -316,32 +316,35 @@
       <!-- Features Section -->
       <section id="features" class="section">
         <div class="container">
+          <div class="section-label-bar">
+            <span class="section-label-tag">Özellikler</span>
+          </div>
           <div class="section-header reveal">
-            <div class="section-pill" style="color:#00E5FF;border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">Neden CustomShape3D?</div>
+            <div class="section-pill" style="color:#EDEDED;border-color:rgba(237,237,237,0.2);background:rgba(237,237,237,0.05)">Neden CustomShape3D?</div>
             <h2 class="section-title">Her Şey <span class="gradient-text">Tek Platformda</span></h2>
             <p class="section-desc">Tasarımdan üretime, AI analizinden kapı teslimatına kadar eksiksiz bir 3D üretim ekosistemi.</p>
           </div>
 
           <div class="features-grid">
-            <div class="feature-card reveal" style="--i:0">
-              <div class="feature-icon" style="background:rgba(0,229,255,0.08);border-color:rgba(0,229,255,0.25)">
-                <svg width="22" height="22" fill="none" stroke="#00E5FF" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <div class="feature-card reveal" style="--i:0" role="button" tabindex="0" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})" title="Mağazaya git">
+              <div class="feature-icon" style="background:rgba(237,237,237,0.08);border-color:rgba(237,237,237,0.25)">
+                <svg width="22" height="22" fill="none" stroke="#EDEDED" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
               </div>
               <h3 class="feature-title">E-Ticaret Mağazası</h3>
               <p class="feature-desc">500+ hazır 3D parça. Anında satın al, hızlı teslimat. Premium kalite güvencesi.</p>
-              <div class="feature-link" style="color:#00E5FF">Keşfet →</div>
+              <div class="feature-link" style="color:#EDEDED">Keşfet →</div>
             </div>
 
-            <div class="feature-card reveal" style="--i:1">
-              <div class="feature-icon" style="background:rgba(123,47,255,0.08);border-color:rgba(123,47,255,0.25)">
-                <svg width="22" height="22" fill="none" stroke="#7B2FFF" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div class="feature-card reveal" style="--i:1" role="button" tabindex="0" onclick="document.getElementById('viewer').scrollIntoView({behavior:'smooth'})" title="Dosya yükle">
+              <div class="feature-icon" style="background:rgba(161,161,170,0.08);border-color:rgba(161,161,170,0.25)">
+                <svg width="22" height="22" fill="none" stroke="#A1A1AA" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
               <h3 class="feature-title">Özel Üretim</h3>
               <p class="feature-desc">STL, OBJ dosyanızı yükleyin. Önizleyin, parametrelerinizi ayarlayın, sipariş verin.</p>
-              <div class="feature-link" style="color:#7B2FFF">Dosya Yükle →</div>
+              <div class="feature-link" style="color:#A1A1AA">Dosya Yükle →</div>
             </div>
 
-            <div class="feature-card reveal" style="--i:2">
+            <div class="feature-card reveal" style="--i:2" role="button" tabindex="0" onclick="document.getElementById('viewer').scrollIntoView({behavior:'smooth'})" title="Viewer'ı aç">
               <div class="feature-icon" style="background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.25)">
                 <svg width="22" height="22" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
               </div>
@@ -350,7 +353,7 @@
               <div class="feature-link" style="color:#34D399">Viewer'ı Aç →</div>
             </div>
 
-            <div class="feature-card reveal" style="--i:3">
+            <div class="feature-card reveal" style="--i:3" role="button" tabindex="0" onclick="document.getElementById('ai').scrollIntoView({behavior:'smooth'})" title="AI Asistana git">
               <div class="feature-icon" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.25)">
                 <svg width="22" height="22" fill="none" stroke="#FBBF24" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
               </div>
@@ -365,22 +368,25 @@
       <!-- Process Section -->
       <section id="process" class="section section-alt">
         <div class="container">
+          <div class="section-label-bar">
+            <span class="section-label-tag">Nasıl Çalışır?</span>
+          </div>
           <div class="section-header reveal">
-            <div class="section-pill" style="color:#9B5FFF;border-color:rgba(123,47,255,0.2);background:rgba(123,47,255,0.05)">Nasıl Çalışır?</div>
+            <div class="section-pill" style="color:#9B5FFF;border-color:rgba(161,161,170,0.2);background:rgba(161,161,170,0.05)">Nasıl Çalışır?</div>
             <h2 class="section-title">4 Adımda <span class="gradient-text">Üretim</span></h2>
           </div>
           <div class="process-grid">
             <div class="process-step reveal" style="--i:0">
-              <div class="process-num" style="border-color:rgba(0,229,255,0.5);box-shadow:0 0 25px rgba(0,229,255,0.15)">
-                <span style="color:#00E5FF">01</span>
+              <div class="process-num" style="border-color:rgba(237,237,237,0.5);box-shadow:0 0 25px rgba(237,237,237,0.15)">
+                <span style="color:#EDEDED">01</span>
               </div>
               <div class="process-line-connector"></div>
               <h4 class="process-title">Tasarım Seç / Yükle</h4>
               <p class="process-desc">Mağazadan hazır parça seç ya da kendi STL dosyanı yükle.</p>
             </div>
             <div class="process-step reveal" style="--i:1">
-              <div class="process-num" style="border-color:rgba(123,47,255,0.5);box-shadow:0 0 25px rgba(123,47,255,0.15)">
-                <span style="color:#7B2FFF">02</span>
+              <div class="process-num" style="border-color:rgba(161,161,170,0.5);box-shadow:0 0 25px rgba(161,161,170,0.15)">
+                <span style="color:#A1A1AA">02</span>
               </div>
               <div class="process-line-connector"></div>
               <h4 class="process-title">AI Analizi</h4>
@@ -405,36 +411,14 @@
         </div>
       </section>
 
-      <!-- Placeholder Sections -->
-      <section id="shop" class="section">
-        <div class="container">
-          <div class="coming-soon-card reveal" style="--accent:#00E5FF">
-            <div class="section-pill" style="color:#00E5FF;border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">Coming Soon — Adım 3</div>
-            <h2 class="section-title">E-Ticaret Mağazası</h2>
-            <p class="section-desc">Ürün kataloğu, filtreleme, sepet sistemi ve entegre 3D preview.</p>
-          </div>
-        </div>
-      </section>
+      <!-- Shop Section -->
+      <section id="shop" class="section"></section>
 
-      <section id="viewer" class="section section-alt">
-        <div class="container">
-          <div class="coming-soon-card reveal" style="--accent:#7B2FFF">
-            <div class="section-pill" style="color:#9B5FFF;border-color:rgba(123,47,255,0.2);background:rgba(123,47,255,0.05)">Coming Soon — Adım 4</div>
-            <h2 class="section-title">3D İnteraktif Viewer</h2>
-            <p class="section-desc">Three.js ile tam STL/OBJ desteği, OrbitControls, wireframe toggle.</p>
-          </div>
-        </div>
-      </section>
+      <!-- Viewer / STL Upload Section -->
+      <section id="viewer" class="section section-alt"></section>
 
-      <section id="ai" class="section">
-        <div class="container">
-          <div class="coming-soon-card reveal" style="--accent:#FBBF24">
-            <div class="section-pill" style="color:#FBBF24;border-color:rgba(251,191,36,0.2);background:rgba(251,191,36,0.05)">Coming Soon — Adım 6</div>
-            <h2 class="section-title">AI Asistan Chat</h2>
-            <p class="section-desc">Doğal dil ile 3D tasarım analizi, malzeme önerileri ve teknik raporlar.</p>
-          </div>
-        </div>
-      </section>
+      <!-- AI Section -->
+      <section id="ai" class="section"></section>
 
     </main>
 
@@ -444,13 +428,13 @@
         <div class="footer-inner">
           <div class="footer-brand">
             <div class="nav-logo-icon" style="width:32px;height:32px;border-radius:8px;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--void)" stroke="var(--void)" stroke-width="2.5">
                 <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                 <path d="M2 17l10 5 10-5"/>
                 <path d="M2 12l10 5 10-5"/>
               </svg>
             </div>
-            <span style="font-family:'Orbitron',sans-serif;font-weight:700">Custom<span style="color:#00E5FF">Shape3D</span></span>
+            <span style="font-weight:800">Custom<span style="color:var(--muted)">Shape3D</span></span>
           </div>
           <p class="footer-copy">© 2026 CustomShape3D. Tüm hakları saklıdır.</p>
           <div class="footer-links">

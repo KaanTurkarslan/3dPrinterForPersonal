@@ -139,17 +139,29 @@ function featureCardAnimations() {
 // ══════════════════════════════════════════════════
 // SCROLL REVEAL — Intersection Observer
 // ══════════════════════════════════════════════════
+let revealObserver = null;
+
 function scrollReveal() {
-  const observer = new IntersectionObserver((entries) => {
+  revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
-        observer.unobserve(entry.target);
+        revealObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -20px 0px' });
 
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+}
+
+/** Call this after dynamically injecting new .reveal elements */
+export function observeNewReveals(root = document) {
+  if (!revealObserver) {
+    // Observer not ready yet — just make elements visible immediately
+    root.querySelectorAll('.reveal:not(.in-view)').forEach(el => el.classList.add('in-view'));
+    return;
+  }
+  root.querySelectorAll('.reveal:not(.in-view)').forEach(el => revealObserver.observe(el));
 }
 
 // ══════════════════════════════════════════════════
@@ -192,11 +204,11 @@ function aiBubbleMessages() {
   if (!msgEl) return;
 
   const messages = [
-    'PLA+ ile optimal sonuç alırsınız. <em style="color:#00E5FF;font-style:normal;">%20 infill</em> dayanım için yeterli. 🎯',
-    'Bu model için <em style="color:#00E5FF;font-style:normal;">PETG</em> öneririm. Isı direnci mükemmel! 🔥',
-    '<em style="color:#00E5FF;font-style:normal;">Layer height</em> 0.2mm bu geometri için ideal seçim. ✅',
-    'Destek yapısı kaldırıldığında <em style="color:#00E5FF;font-style:normal;">~%28</em> ağırlık azalır. 💡',
-    '<em style="color:#00E5FF;font-style:normal;">Gyroid infill</em> ile hem hafiflik hem sağlamlık! ⚡',
+    'PLA+ ile optimal sonuç alırsınız. <em style="color:#EDEDED;font-style:normal;">%20 infill</em> dayanım için yeterli. 🎯',
+    'Bu model için <em style="color:#EDEDED;font-style:normal;">PETG</em> öneririm. Isı direnci mükemmel! 🔥',
+    '<em style="color:#EDEDED;font-style:normal;">Layer height</em> 0.2mm bu geometri için ideal seçim. ✅',
+    'Destek yapısı kaldırıldığında <em style="color:#EDEDED;font-style:normal;">~%28</em> ağırlık azalır. 💡',
+    '<em style="color:#EDEDED;font-style:normal;">Gyroid infill</em> ile hem hafiflik hem sağlamlık! ⚡',
   ];
 
   let idx = 0;

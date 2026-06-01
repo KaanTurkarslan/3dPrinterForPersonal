@@ -9,6 +9,7 @@ import { initNav }        from './js/nav.js';
 import { initAnimations } from './js/animations.js';
 import { initShop }       from './js/shop.js';
 import { initAI }         from './js/ai.js';
+import { initViewer }     from './js/viewer.js';
 
 // Boot sequence
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,5 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initNav();
   initAnimations();
   initShop();
+  initViewer();
   initAI();
 });

@@ -1,11 +1,12 @@
 /**
  * CustomShape3D — AI Design Assistant Module
- * Soru sormaz · Doğrudan tasarlar · 3D önizleme günceller
+ * Soru sormaz · Doğrudan tasarılar · 3D önizleme günceller
  */
 
 import * as THREE from 'three';
 import { MATERIALS_DB } from './shop.js';
 import { askQwen } from './qwen.js';
+import { observeNewReveals } from './animations.js';
 
 // ══════════════════════════════════════════════════════
 // AI STATE
@@ -40,12 +41,12 @@ const RESPONSES = [
     keys: ['spiral vazo','sarmal vazo','helikal vazo','dönen vazo','burgulu'],
     action: () => switchVaseStyle('spiral'),
     reply: () => `Spiral vazo tasarımı oluşturuldu! 🌀\n\n**Yükseklik:** 180mm | **Çap:** 80mm\n**Sarmal:** 3 tam dönüş\n**Önerilen:** PETG veya Resin (ultra detay)\n**Baskı notu:** Spiral formlar için destek yapısı önerilmez — spiral kendi kendini taşır.\n**Fiyat:** ₺110–₺320 (malzemeye göre)`,
-    actions: ['dalga yap','düz yap','resin seç'],
+    actions: ['drone yap','dişli yap','resin seç'],
   },
   {
-    keys: ['dalga vazo','dalgalı vazo','wave vazo','dalga geri','dalgalı geri'],
-    action: () => switchVaseStyle('wave'),
-    reply: () => `Dalga vazo tasarımına geri döndük! 〰️\n\n**Dalga frekansı:** 7 çevrim\n**Dalga genliği:** 8mm\n**İdeal:** PETG — dalga detaylarını mükemmel yansıtır.\n**Baskı kalitesi:** 0.15mm katman önerilir.`,
+    keys: ['drone','drone yap','fpv drone'],
+    action: () => switchAIModel('drone'),
+    reply: () => `Drone gövdesi tasarımına geçildi! 🚁\n\n**Dalga frekansı:** 7 çevrim\n**Dalga genliği:** 8mm\n**İdeal:** PETG — dalga detaylarını mükemmel yansıtır.\n**Baskı kalitesi:** 0.15mm katman önerilir.`,
     actions: ['düz yap','spiral yap','renk değiştir'],
   },
   {
@@ -177,7 +178,7 @@ const RESPONSES = [
   {
     keys: ['fiyat','ne kadar','kaç para','maliyet','ücret'],
     action: null,
-    reply: () => `**Fiyatlandırma** 💰\n\nFiyat 3 faktöre bağlı:\n\n1. **Baz fiyat** — modele göre ₺45–₺320\n2. **Malzeme çarpanı** — PLA+ (×1.0) → Resin (×2.8)\n3. **Kalite çarpanı** — Taslak (×0.75) → Ultra (×2.2)\n\n**Örnek:** Dalga vazo + PETG + Standart = ₺95×1.3×1.0 = ₺124\n\nHer kart üzerinde canlı fiyat hesaplayıcı mevcut!`,
+    reply: () => `**Fiyatlandırma** 💰\n\nFiyat 3 faktöre bağlı:\n\n1. **Baz fiyat** — modele göre ₺45–₺320\n2. **Malzeme çarpanı** — PLA+ (×1.0) → Resin (×2.8)\n3. **Kalite çarpanı** — Taslak (×0.75) → Ultra (×2.2)\n\n**Örnek:** Drone + PETG + Standart = ₺280×1.3×1.0 = ₺364\n\nHer kart üzerinde canlı fiyat hesaplayıcı mevcut!`,
     actions: ['ucuzunu göster','en iyisi ne'],
   },
   {
@@ -191,7 +192,7 @@ const RESPONSES = [
   {
     keys: ['merhaba','selam','hey','hi','günaydın','iyi günler'],
     action: null,
-    reply: () => `Merhaba! 👋 CustomShape3D AI Tasarım Asistanı'na hoş geldiniz!\n\n**Neler yapabilirim?**\n• 3D model tasarımını doğrudan değiştiririm\n• Filament malzeme önerisi sunarım\n• Canlı 3D önizleme ile tasarımı gösteririm\n• Baskı parametrelerini optimize ederim\n\n**Deneyin:** *"Dalga vazonun düz halini göster"* veya *"Drone için en iyi malzeme ne?"*`,
+    reply: () => `Merhaba! 👋 CustomShape3D AI Tasarım Asistanı'na hoş geldiniz!\n\n**Neler yapabilirim?**\n• 3D model tasarımını doğrudan değiştiririm\n• Filament malzeme önerisi sunarım\n• Canlı 3D önizleme ile tasarımı gösteririm\n• Baskı parametrelerini optimize ederim\n\n**Deneyin:** *"Drone gövdesini göster"* veya *"Drone için en iyi malzeme ne?"*`,
     actions: ['vazo tasarımı','drone yap','fiyat öğren'],
   },
   {
@@ -213,6 +214,15 @@ export function initAI() {
   renderAISection();
   initAI3DViewer();
   bindAIEvents();
+
+  // Register dynamically added .reveal elements
+  const aiSection = document.getElementById('ai');
+  if (aiSection) {
+    observeNewReveals(aiSection);
+    setTimeout(() => {
+      aiSection.querySelectorAll('.reveal:not(.in-view)').forEach(el => el.classList.add('in-view'));
+    }, 300);
+  }
 
   // Hero "AI ile Tasarla" button
   document.getElementById('btn-ai')?.addEventListener('click', () => {
@@ -262,9 +272,9 @@ function renderAISection() {
                 <div class="ai-msg-name">CustomShape3D AI</div>
                 <p>Merhaba! Ben tasarım asistanınızım. 🎨<br><br>
                 <strong>Soru sormam</strong> — <em>doğrudan yaparım.</em><br><br>
-                Deneyin: <em>"dalga vazonun düz halini istiyorum"</em> veya <em>"drone için CF-PLA ne kadar güçlü?"</em></p>
+                Deneyin: <em>"drone gövdesi istiyorum"</em> veya <em>"drone için CF-PLA ne kadar güçlü?"</em></p>
                 <div class="ai-action-btns">
-                  <button class="ai-action-btn" data-prompt="dalga vazonun düz halini istiyorum">Düz vazo</button>
+                  <button class="ai-action-btn" data-prompt="drone gövdesi istiyorum">Drone Gövdesi</button>
                   <button class="ai-action-btn" data-prompt="spiral vazo yap">Spiral vazo</button>
                   <button class="ai-action-btn" data-prompt="CF-PLA hakkında bilgi ver">CF-PLA nedir?</button>
                   <button class="ai-action-btn" data-prompt="drone tasarla">Drone</button>
@@ -275,7 +285,7 @@ function renderAISection() {
 
           <!-- Suggested prompts -->
           <div class="ai-suggestions" id="ai-suggestions">
-            <button class="ai-suggest" data-prompt="Dalga vazonun düz halini istiyorum">🏺 Düz vazo</button>
+            <button class="ai-suggest" data-prompt="Dalga vazonun düz halini istiyorum">🚁 Drone Gövdesi</button>
             <button class="ai-suggest" data-prompt="PETG malzeme özellikleri">💧 PETG nedir?</button>
             <button class="ai-suggest" data-prompt="En kaliteli baskı kalitesini seç">🔬 İnce kalite</button>
             <button class="ai-suggest" data-prompt="Teslimat süresi ne kadar">📦 Teslimat</button>
@@ -289,7 +299,7 @@ function renderAISection() {
               <textarea
                 id="ai-input"
                 class="ai-input"
-                placeholder="Tasarımınızı tarif edin… (örn: 'dalga vazonun düz halini istiyorum')"
+                placeholder="Tasarımınızı tarif edin… (örn: 'drone gövdesi istiyorum')"
                 rows="1"
               ></textarea>
               <button class="ai-send-btn" id="ai-send-btn" aria-label="Gönder">
@@ -311,7 +321,7 @@ function renderAISection() {
             <div class="ai-preview-live">
               <span class="viewer-live-dot"></span> CANLI 3D ÖNİZLEME
             </div>
-            <div class="ai-model-label" id="ai-model-label">Dalga Vazo</div>
+            <div class="ai-model-label" id="ai-model-label">FPV Drone</div>
           </div>
 
           <!-- 3D Canvas -->
@@ -487,15 +497,11 @@ function buildAIVase(style = 'wave') {
 
   const geo = new THREE.LatheGeometry(points, 52);
   const mat = new THREE.MeshPhongMaterial({
-    color: 0x030c0a, emissive: col, emissiveIntensity: 0.14,
-    specular: col, shininess: 200, transparent: true, opacity: 0.94, side: THREE.DoubleSide,
+    color: 0x030c0a, emissive: col, emissiveIntensity: 0.20,
+    specular: col, shininess: 200, transparent: false, side: THREE.DoubleSide,
   });
-  const wm = new THREE.MeshBasicMaterial({ color: col, wireframe: true, transparent: true, opacity: 0.12 });
 
   aiState.group.add(new THREE.Mesh(geo, mat));
-  const ws = new THREE.Mesh(geo.clone(), wm);
-  ws.scale.setScalar(1.012);
-  aiState.group.add(ws);
 
   // Foot ring
   const foot = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.028, 8, 32),
@@ -643,7 +649,7 @@ function switchVaseStyle(style) {
   aiState.vaseStyle = style;
   buildAIVase(style);
 
-  const labels = { wave:'Dalga Vazo', straight:'Düz Silindirik Vazo', spiral:'Spiral Vazo', tapered:'Konik Vazo', bulge:'Şişkin Vazo' };
+  const labels = { wave:'FPV Drone', straight:'Düz Silindirik Vazo', spiral:'Spiral Vazo', tapered:'Konik Vazo', bulge:'Şişkin Vazo' };
   const sizes  = { wave:'80×80×180mm', straight:'80×80×180mm', spiral:'80×80×200mm', tapered:'90×45×180mm', bulge:'90×90×170mm' };
   const times  = { wave:'~5 saat', straight:'~4 saat', spiral:'~6 saat', tapered:'~4.5 saat', bulge:'~5.5 saat' };
 
@@ -757,7 +763,7 @@ async function sendMessage() {
     
     // Call Qwen model instead of hardcoded replies
     let reply = await askQwen(text);
-    let actions = matched ? (matched.actions || []) : ['vazo tasarla','drone yap','fiyat sor','dalga vazo'];
+    let actions = matched ? (matched.actions || []) : ['vazo tasarla','drone yap','fiyat sor','drone'];
     
     removeTyping(typingId);
     appendBotMessage(reply, actions);

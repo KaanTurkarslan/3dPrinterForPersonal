@@ -4,6 +4,8 @@
  */
 
 import * as THREE from 'three';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
+import { observeNewReveals } from './animations.js';
 
 // ══════════════════════════════════════════════════════
 // MATERIALS DATABASE
@@ -30,29 +32,29 @@ const QUALITIES_DB = [
 // ══════════════════════════════════════════════════════
 const PRODUCTS = [
   {
+    id: 'custom-upload', name: 'Kendi Modeliniz', subtitle: 'STL / OBJ Dosyası Yükle',
+    price: 50, category: 'ozel', rating: 5.0, reviews: 0, dims: 'Belirsiz',
+    accentColor: '#F43F5E', badge: 'Özel', badgeColor: '#F43F5E',
+    availableMaterials: ['pla','petg','abs','cf','resin'], defaultMaterial: 'pla', defaultQuality: 'standard',
+    colors: [
+      { name: 'Kırmızı', hex: '#EF4444' }, { name: 'Mavi', hex: '#3B82F6' },
+      { name: 'Siyah', hex: '#111827' }, { name: 'Beyaz', hex: '#F9FAFB' }
+    ],
+    buildFn: buildCustomUpload,
+  },
+  {
     id: 'drone-frame', name: 'Drone Gövdesi', subtitle: 'FPV Racing Frame v2.1',
     price: 280, category: 'mekanik', rating: 4.9, reviews: 128, dims: '124 × 90 × 45 mm',
-    accentColor: '#00E5FF', badge: 'Çok Satan', badgeColor: '#00E5FF',
+    accentColor: '#EDEDED', badge: 'Çok Satan', badgeColor: '#EDEDED',
     availableMaterials: ['pla','petg','abs','cf'], defaultMaterial: 'cf', defaultQuality: 'fine',
     colors: [
-      { name: 'Siyan', hex: '#00E5FF' }, { name: 'Kırmızı', hex: '#EF4444' },
+      { name: 'Siyan', hex: '#EDEDED' }, { name: 'Kırmızı', hex: '#EF4444' },
       { name: 'Sarı',  hex: '#EAB308' }, { name: 'Gümüş',   hex: '#9CA3AF' },
-      { name: 'Siyah', hex: '#1a1a2e' }, { name: 'Mor',     hex: '#7B2FFF' },
+      { name: 'Siyah', hex: '#1a1a2e' }, { name: 'Mor',     hex: '#A1A1AA' },
     ],
     buildFn: buildDroneFrame,
   },
-  {
-    id: 'wave-vase', name: 'Dalga Vazo', subtitle: 'Parametrik Wavy Design',
-    price: 95, category: 'dekor', rating: 4.7, reviews: 64, dims: '80 × 80 × 180 mm',
-    accentColor: '#34D399', badge: 'Yeni', badgeColor: '#34D399',
-    availableMaterials: ['pla','petg','resin'], defaultMaterial: 'petg', defaultQuality: 'standard',
-    colors: [
-      { name: 'Zümrüt',  hex: '#34D399' }, { name: 'Safir',  hex: '#0EA5E9' },
-      { name: 'Lavanta', hex: '#A78BFA' }, { name: 'Mercan', hex: '#F97316' },
-      { name: 'Gül',     hex: '#F43F5E' }, { name: 'Krem',   hex: '#FEF3C7' },
-    ],
-    buildFn: buildWaveVase,
-  },
+
   {
     id: 'gear-set', name: 'Dişli Mekanizma', subtitle: '3-Kademeli Güç Aktarımı',
     price: 165, category: 'mekanik', rating: 4.8, reviews: 93, dims: '120 × 100 × 28 mm',
@@ -68,10 +70,10 @@ const PRODUCTS = [
   {
     id: 'phone-stand', name: 'Telefon / Tablet Standı', subtitle: 'Çok Açılı Ergonomik',
     price: 75, category: 'aksesuar', rating: 4.6, reviews: 210, dims: '90 × 70 × 110 mm',
-    accentColor: '#7B2FFF', badge: 'Popüler', badgeColor: '#7B2FFF',
+    accentColor: '#A1A1AA', badge: 'Popüler', badgeColor: '#A1A1AA',
     availableMaterials: ['pla','petg','tpu','abs'], defaultMaterial: 'pla', defaultQuality: 'standard',
     colors: [
-      { name: 'Mor',    hex: '#7B2FFF' }, { name: 'Siyah', hex: '#111827' },
+      { name: 'Mor',    hex: '#A1A1AA' }, { name: 'Siyah', hex: '#111827' },
       { name: 'Beyaz',  hex: '#F9FAFB' }, { name: 'Mavi',  hex: '#3B82F6' },
       { name: 'Pembe',  hex: '#EC4899' }, { name: 'Yeşil', hex: '#22C55E' },
     ],
@@ -187,57 +189,190 @@ export function initShop() {
   initCartBadge();
   initColorPickers();
   initMaterialQualitySelectors();
+
+  // Register dynamically added .reveal elements
+  const shopSection = document.getElementById('shop');
+  if (shopSection) {
+    observeNewReveals(shopSection);
+    setTimeout(() => {
+      shopSection.querySelectorAll('.reveal:not(.in-view)').forEach(el => el.classList.add('in-view'));
+    }, 300);
+  }
+
+  const uploadInput = document.getElementById('file-input-custom-upload');
+  if (uploadInput) {
+    uploadInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        loadUserSTL(e.target.files[0], 'custom-upload');
+      }
+    });
+  }
 }
 
 // ══════════════════════════════════════════════════════
 // RENDER
 // ══════════════════════════════════════════════════════
+const ITEMS_PER_PAGE = 6;
+let shopCurrentPage = 1;
+let shopFilteredProducts = [];
+
 function renderShopSection() {
   const section = document.getElementById('shop');
   if (!section) return;
 
+  // exclude the custom-upload from main shop grid (it lives in viewer)
+  const shopProducts = PRODUCTS.filter(p => p.id !== 'custom-upload');
+  shopFilteredProducts = shopProducts;
+
   section.innerHTML = `
     <div class="container">
+      <div class="section-label-bar">
+        <span class="section-label-tag">Ma\u011faza</span>
+      </div>
       <div class="section-header reveal">
-        <div class="section-pill" style="color:#00E5FF;border-color:rgba(0,229,255,0.2);background:rgba(0,229,255,0.05)">
-          ${PRODUCTS.length}+ Hazır Model
+        <div class="section-pill" style="color:#EDEDED;border-color:rgba(237,237,237,0.2);background:rgba(237,237,237,0.05)">
+          ${shopProducts.length}+ Haz\u0131r Model
         </div>
-        <h2 class="section-title">3D Baskı <span class="gradient-text">Mağazası</span></h2>
-        <p class="section-desc">Her model interaktif 3D önizleme, renk seçici ve canlı fiyat hesaplayıcı ile gelir.</p>
+        <h2 class="section-title">3D Bask\u0131 <span class="gradient-text">Ma\u011fazas\u0131</span></h2>
+        <p class="section-desc">Her model interaktif 3D \u00f6nizleme, renk se\u00e7ici ve canl\u0131 fiyat hesaplay\u0131c\u0131 ile gelir.</p>
       </div>
 
       <div class="shop-filters" id="shop-filters">
-        <button class="shop-filter-btn active" data-filter="all">Tümü <span class="filter-count">${PRODUCTS.length}</span></button>
-        <button class="shop-filter-btn" data-filter="mekanik">⚙️ Mekanik <span class="filter-count">${PRODUCTS.filter(p=>p.category==='mekanik').length}</span></button>
-        <button class="shop-filter-btn" data-filter="dekor">🏠 Dekor <span class="filter-count">${PRODUCTS.filter(p=>p.category==='dekor').length}</span></button>
-        <button class="shop-filter-btn" data-filter="aksesuar">🎒 Aksesuar <span class="filter-count">${PRODUCTS.filter(p=>p.category==='aksesuar').length}</span></button>
+        <button class="shop-filter-btn active" data-filter="all">T\u00fcm\u00fc <span class="filter-count">${shopProducts.length}</span></button>
+        <button class="shop-filter-btn" data-filter="mekanik">\u2699\ufe0f Mekanik <span class="filter-count">${shopProducts.filter(p=>p.category==='mekanik').length}</span></button>
+        <button class="shop-filter-btn" data-filter="dekor">\u{1f3e0} Dekor <span class="filter-count">${shopProducts.filter(p=>p.category==='dekor').length}</span></button>
+        <button class="shop-filter-btn" data-filter="aksesuar">\u{1f392} Aksesuar <span class="filter-count">${shopProducts.filter(p=>p.category==='aksesuar').length}</span></button>
         <div class="shop-filter-spacer"></div>
         <select class="shop-sort-select" id="shop-sort">
-          <option value="default">Sırala</option>
-          <option value="price-asc">Fiyat ↑</option>
-          <option value="price-desc">Fiyat ↓</option>
-          <option value="rating">En Yüksek Puan</option>
+          <option value="default">S\u0131rala</option>
+          <option value="price-asc">Fiyat \u2191</option>
+          <option value="price-desc">Fiyat \u2193</option>
+          <option value="rating">En Y\u00fcksek Puan</option>
         </select>
       </div>
 
-      <div class="shop-grid" id="shop-grid">
-        ${PRODUCTS.map(p => renderProductCard(p)).join('')}
-      </div>
+      <div class="shop-grid" id="shop-grid"></div>
+      <div class="shop-pagination" id="shop-pagination"></div>
     </div>
   `;
 
-  PRODUCTS.forEach(p => {
-    const canvas = document.getElementById(`canvas-${p.id}`);
-    if (canvas) init3DCard(canvas, p);
-  });
+  renderShopPage(1);
 
-  document.querySelectorAll('.shop-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => { addToCart(btn.dataset.id, btn); e.stopPropagation(); });
-  });
   document.querySelectorAll('.shop-wish-btn').forEach(btn => {
     btn.addEventListener('click', e => { btn.classList.toggle('active'); e.stopPropagation(); });
   });
   document.getElementById('shop-sort')?.addEventListener('change', e => sortProducts(e.target.value));
+}
+
+function renderShopPage(page) {
+  shopCurrentPage = page;
+  const grid = document.getElementById('shop-grid');
+  if (!grid) return;
+
+  const totalPages = Math.ceil(shopFilteredProducts.length / ITEMS_PER_PAGE);
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  const pageProducts = shopFilteredProducts.slice(start, start + ITEMS_PER_PAGE);
+
+  grid.innerHTML = pageProducts.map(p => renderProductCard(p)).join('');
+
+  pageProducts.forEach(p => {
+    const canvas = document.getElementById(`canvas-${p.id}`);
+    if (canvas) init3DCard(canvas, p);
+  });
+
+  grid.querySelectorAll('.shop-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => { addToCart(btn.dataset.id, btn); e.stopPropagation(); });
+  });
+  grid.querySelectorAll('.shop-wish-btn').forEach(btn => {
+    btn.addEventListener('click', e => { btn.classList.toggle('active'); e.stopPropagation(); });
+  });
+
+  // Re-init color pickers for new page
+  grid.querySelectorAll('.color-swatch').forEach(swatch => {
+    swatch.addEventListener('click', () => {
+      const pid = swatch.dataset.product;
+      const hex = swatch.dataset.hex;
+      const name = swatch.dataset.name;
+      grid.querySelectorAll(`.color-swatch[data-product="${pid}"]`).forEach(s => s.classList.remove('active'));
+      swatch.classList.add('active');
+      const label = document.getElementById(`color-label-${pid}`);
+      if (label) label.textContent = name;
+      updateModelColor(pid, hex);
+      const priceEl = document.getElementById(`price-${pid}`);
+      const totalEl = document.getElementById(`breakdown-total-${pid}`);
+      if (priceEl) priceEl.style.color = hex;
+      if (totalEl) totalEl.style.color = hex;
+    });
+  });
+
+  grid.querySelectorAll('.mat-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const pid = chip.dataset.product;
+      const mid = chip.dataset.mat;
+      grid.querySelectorAll(`.mat-chip[data-product="${pid}"]`).forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const state = cardStates.get(pid);
+      if (state) state.selectedMat = mid;
+      const descEl = document.getElementById(`mat-desc-${pid}`);
+      if (descEl) descEl.textContent = MATERIALS_DB[mid].desc;
+      recalcPrice(pid);
+    });
+  });
+
+  grid.querySelectorAll('.qual-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const pid = chip.dataset.product;
+      const qid = chip.dataset.qual;
+      grid.querySelectorAll(`.qual-chip[data-product="${pid}"]`).forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const state = cardStates.get(pid);
+      if (state) state.selectedQual = qid;
+      recalcPrice(pid);
+    });
+  });
+
+  grid.querySelectorAll('.shop-ai-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const name = btn.dataset.name;
+      document.getElementById('ai')?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        const inp = document.getElementById('ai-input');
+        if (inp) {
+          inp.value = `${name} i\u00e7in \u00f6zel tasar\u0131m istiyorum`;
+          inp.dispatchEvent(new Event('input'));
+          inp.focus();
+        }
+      }, 600);
+      e.stopPropagation();
+    });
+  });
+
+  renderPagination(totalPages);
+  // Scroll to shop top when changing page
+  if (page !== 1) {
+    document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function renderPagination(totalPages) {
+  const container = document.getElementById('shop-pagination');
+  if (!container || totalPages <= 1) {
+    if (container) container.innerHTML = '';
+    return;
+  }
+
+  let html = '<div class="pagination">';
+  html += `<button class="page-btn page-prev" ${shopCurrentPage === 1 ? 'disabled' : ''} data-page="${shopCurrentPage - 1}">&larr;</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    html += `<button class="page-btn ${i === shopCurrentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+  }
+  html += `<button class="page-btn page-next" ${shopCurrentPage === totalPages ? 'disabled' : ''} data-page="${shopCurrentPage + 1}">&rarr;</button>`;
+  html += '</div>';
+  container.innerHTML = html;
+
+  container.querySelectorAll('.page-btn:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', () => renderShopPage(parseInt(btn.dataset.page)));
+  });
 }
 
 // ── Card HTML ─────────────────────────────────────────
@@ -274,6 +409,13 @@ function renderProductCard(p) {
             <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
           </svg>
         </button>
+        ${p.id === 'custom-upload' ? `
+        <div class="shop-upload-overlay" id="upload-overlay-${p.id}">
+          <input type="file" id="file-input-${p.id}" accept=".stl" style="display:none;" />
+          <button class="btn-primary" onclick="document.getElementById('file-input-${p.id}').click()" style="padding:8px 12px;font-size:0.85rem;border-radius:8px;">
+            STL Seç
+          </button>
+        </div>` : ''}
         <div class="shop-drag-hint">↺ Döndür</div>
       </div>
 
@@ -497,7 +639,55 @@ function makeAccentMat(col, opacity = 0.80) {
   return new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity });
 }
 function makeWireMat(col) {
-  return new THREE.MeshBasicMaterial({ color: col, wireframe: true, transparent: true, opacity: 0.14 });
+  return new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.0 });
+}
+
+// 0 ── Custom Upload ─────────────────────────────────────
+function buildCustomUpload(group, col) {
+  const pm = makePrimaryMat(col, 130);
+  const geo = new THREE.BoxGeometry(1.2, 1.2, 1.2);
+  const mesh = new THREE.Mesh(geo, pm);
+  group.add(mesh);
+  
+  group.userData.colorable = { primaryMats: [pm], accentMats: [] };
+  group.userData.isCustom = true; 
+}
+
+function loadUserSTL(file, pid) {
+  const state = cardStates.get(pid);
+  if (!state) return;
+  const url = URL.createObjectURL(file);
+  const loader = new STLLoader();
+  
+  loader.load(url, (geometry) => {
+    state.group.children.slice().forEach(c => {
+      if (c.isMesh) {
+        c.geometry.dispose();
+        state.group.remove(c);
+      }
+    });
+    geometry.center();
+    geometry.computeVertexNormals();
+    geometry.computeBoundingBox();
+    const size = new THREE.Vector3();
+    geometry.boundingBox.getSize(size);
+    const scale = 1.5 / Math.max(size.x, size.y, size.z);
+    
+    const mat = state.colorable.primaryMats[0];
+    const mesh = new THREE.Mesh(geometry, mat);
+    mesh.scale.setScalar(scale);
+    
+    state.group.add(mesh);
+    showToast('STL dosyası başarıyla yüklendi! 🚀');
+    
+    const nameEl = document.querySelector(`#card-${pid} .shop-card-name`);
+    const subEl = document.querySelector(`#card-${pid} .shop-card-sub`);
+    if (nameEl) nameEl.textContent = file.name.substring(0, 20);
+    if (subEl) subEl.textContent = 'Yüklenen Model';
+  }, undefined, (err) => {
+    console.error(err);
+    showToast('STL yüklenirken hata oluştu.');
+  });
 }
 
 // 1 ── Drone Frame ─────────────────────────────────────
@@ -612,7 +802,7 @@ function buildWaveVase(group, col) {
     color: 0x030d0a, emissive: col, emissiveIntensity: 0.14,
     specular: col, shininess: 200, transparent: true, opacity: 0.94, side: THREE.DoubleSide,
   });
-  const wm = new THREE.MeshBasicMaterial({ color: col, wireframe: true, transparent: true, opacity: 0.13 });
+  const wm = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.0 });
 
   group.add(new THREE.Mesh(geo, pm));
   const wireShell = new THREE.Mesh(geo.clone(), wm);
@@ -1127,7 +1317,7 @@ function buildGoProMount(group, col) {
   group.add(plate);
 
   // Camera outline
-  const camWire = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.84, 0.15), new THREE.MeshBasicMaterial({ color: col, wireframe: true, transparent: true, opacity: 0.16 }));
+  const camWire = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.84, 0.15), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.0 }));
   camWire.position.y = 0.85;
   group.add(camWire);
 
@@ -1352,35 +1542,27 @@ function recalcPrice(productId) {
 // FILTERS + SORT
 // ══════════════════════════════════════════════════════
 function initFilters() {
-  document.querySelectorAll('.shop-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.shop-filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const f = btn.dataset.filter;
-      document.querySelectorAll('.shop-card').forEach(card => {
-        const show = f === 'all' || card.dataset.category === f;
-        card.style.display = show ? '' : 'none';
-      });
-    });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.shop-filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.shop-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    const shopProducts = PRODUCTS.filter(p => p.id !== 'custom-upload');
+    shopFilteredProducts = f === 'all' ? shopProducts : shopProducts.filter(p => p.category === f);
+    renderShopPage(1);
   });
-
-  document.getElementById('shop-sort')?.addEventListener('change', e => sortProducts(e.target.value));
 }
 
 function sortProducts(mode) {
-  const grid = document.getElementById('shop-grid');
-  if (!grid) return;
-  const cards = [...grid.querySelectorAll('.shop-card')];
-  cards.sort((a, b) => {
-    const pa = PRODUCTS.find(p => p.id === a.dataset.id);
-    const pb = PRODUCTS.find(p => p.id === b.dataset.id);
-    if (!pa || !pb) return 0;
-    if (mode === 'price-asc')  return pa.price - pb.price;
-    if (mode === 'price-desc') return pb.price - pa.price;
-    if (mode === 'rating')     return pb.rating - pa.rating;
+  shopFilteredProducts = [...shopFilteredProducts];
+  shopFilteredProducts.sort((a, b) => {
+    if (mode === 'price-asc')  return a.price - b.price;
+    if (mode === 'price-desc') return b.price - a.price;
+    if (mode === 'rating')     return b.rating - a.rating;
     return 0;
   });
-  cards.forEach(c => grid.appendChild(c));
+  renderShopPage(1);
 }
 
 // ══════════════════════════════════════════════════════

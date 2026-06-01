@@ -31,8 +31,8 @@ function initParticleBackground() {
   const pos   = new Float32Array(COUNT * 3);
   const col   = new Float32Array(COUNT * 3);
 
-  const cCyan   = new THREE.Color('#00E5FF');
-  const cViolet = new THREE.Color('#7B2FFF');
+  const cCyan   = new THREE.Color('#EDEDED');
+  const cViolet = new THREE.Color('#A1A1AA');
   const cWhite  = new THREE.Color('#C8D8F0');
 
   for (let i = 0; i < COUNT; i++) {
@@ -165,7 +165,7 @@ function initMiniViewer() {
   // ── Lighting ──
   scene.add(new THREE.AmbientLight(0x001a33, 0.6));
 
-  const cLight = new THREE.PointLight(0x00E5FF, 2.5, 18);
+  const cLight = new THREE.PointLight(0xEDEDED, 2.5, 18);
   cLight.position.set(3, 3, 3);
   scene.add(cLight);
 
@@ -181,7 +181,7 @@ function initMiniViewer() {
   const bodyMat = new THREE.MeshPhongMaterial({
     color: 0x0a1628,
     emissive: 0x001833,
-    specular: 0x00E5FF,
+    specular: 0xEDEDED,
     shininess: 120,
     transparent: true,
     opacity: 0.92,
@@ -190,10 +190,10 @@ function initMiniViewer() {
 
   // Wireframe shell
   const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x00E5FF,
+    color: 0xEDEDED,
     wireframe: true,
     transparent: true,
-    opacity: 0.10,
+    opacity: 0.0,
   });
   const wireMesh = new THREE.Mesh(bodyGeo.clone(), wireMat);
   wireMesh.scale.setScalar(1.025);
@@ -202,13 +202,13 @@ function initMiniViewer() {
   // Inner glow core
   const coreMesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.55, 16, 16),
-    new THREE.MeshBasicMaterial({ color: 0x00E5FF, transparent: true, opacity: 0.07 })
+    new THREE.MeshBasicMaterial({ color: 0xEDEDED, transparent: true, opacity: 0.07 })
   );
   group.add(coreMesh);
 
   // Orbiting rings (3)
   const ringData = [
-    { r: 1.55, rot: [Math.PI/3, 0, 0],          color: 0x00E5FF, opacity: 0.45 },
+    { r: 1.55, rot: [Math.PI/3, 0, 0],          color: 0xEDEDED, opacity: 0.45 },
     { r: 1.75, rot: [Math.PI/5, Math.PI/4, 0],   color: 0x7B2FFF, opacity: 0.30 },
     { r: 1.95, rot: [Math.PI/2.5, -Math.PI/3, 0],color: 0x004466, opacity: 0.20 },
   ];
@@ -229,7 +229,7 @@ function initMiniViewer() {
     const dot = new THREE.Mesh(
       new THREE.SphereGeometry(0.04, 8, 8),
       new THREE.MeshBasicMaterial({
-        color: i % 2 === 0 ? 0x00E5FF : 0x9B5FFF,
+        color: i % 2 === 0 ? 0xEDEDED : 0xA1A1AA,
         transparent: true,
         opacity: 0.85,
         blending: THREE.AdditiveBlending,
@@ -243,11 +243,10 @@ function initMiniViewer() {
 
   scene.add(group);
 
-  // ── Wireframe toggle ──
   let showWire = false;
   document.getElementById('viewer-wireframe')?.addEventListener('click', () => {
     showWire = !showWire;
-    wireMesh.material.opacity = showWire ? 0.35 : 0.10;
+    wireMesh.material.opacity = showWire ? 0.35 : 0.0;
     bodyMat.wireframe = showWire;
   });
 
