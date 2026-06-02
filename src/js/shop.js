@@ -20,7 +20,7 @@ export const MATERIALS_DB = {
   resin: { name: 'Resin',  mult: 2.80, temp: 'UV',    icon: '💎', desc: 'Ultra yüksek detay · Pürüzsüz yüzey · Sanatsal',   shine: 280 },
 };
 
-const QUALITIES_DB = [
+export const QUALITIES_DB = [
   { id: 'draft',    name: 'Taslak',   layer: '0.30mm', mult: 0.75, icon: '⚡' },
   { id: 'standard', name: 'Standart', layer: '0.20mm', mult: 1.00, icon: '✅' },
   { id: 'fine',     name: 'İnce',     layer: '0.10mm', mult: 1.55, icon: '🔬' },
@@ -280,73 +280,6 @@ function renderShopPage(page) {
     if (canvas) init3DCard(canvas, p);
   });
 
-  grid.querySelectorAll('.shop-add-btn').forEach(btn => {
-    btn.addEventListener('click', e => { addToCart(btn.dataset.id, btn); e.stopPropagation(); });
-  });
-  grid.querySelectorAll('.shop-wish-btn').forEach(btn => {
-    btn.addEventListener('click', e => { btn.classList.toggle('active'); e.stopPropagation(); });
-  });
-
-  // Re-init color pickers for new page
-  grid.querySelectorAll('.color-swatch').forEach(swatch => {
-    swatch.addEventListener('click', () => {
-      const pid = swatch.dataset.product;
-      const hex = swatch.dataset.hex;
-      const name = swatch.dataset.name;
-      grid.querySelectorAll(`.color-swatch[data-product="${pid}"]`).forEach(s => s.classList.remove('active'));
-      swatch.classList.add('active');
-      const label = document.getElementById(`color-label-${pid}`);
-      if (label) label.textContent = name;
-      updateModelColor(pid, hex);
-      const priceEl = document.getElementById(`price-${pid}`);
-      const totalEl = document.getElementById(`breakdown-total-${pid}`);
-      if (priceEl) priceEl.style.color = hex;
-      if (totalEl) totalEl.style.color = hex;
-    });
-  });
-
-  grid.querySelectorAll('.mat-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const pid = chip.dataset.product;
-      const mid = chip.dataset.mat;
-      grid.querySelectorAll(`.mat-chip[data-product="${pid}"]`).forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const state = cardStates.get(pid);
-      if (state) state.selectedMat = mid;
-      const descEl = document.getElementById(`mat-desc-${pid}`);
-      if (descEl) descEl.textContent = MATERIALS_DB[mid].desc;
-      recalcPrice(pid);
-    });
-  });
-
-  grid.querySelectorAll('.qual-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const pid = chip.dataset.product;
-      const qid = chip.dataset.qual;
-      grid.querySelectorAll(`.qual-chip[data-product="${pid}"]`).forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const state = cardStates.get(pid);
-      if (state) state.selectedQual = qid;
-      recalcPrice(pid);
-    });
-  });
-
-  grid.querySelectorAll('.shop-ai-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      const name = btn.dataset.name;
-      document.getElementById('ai')?.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => {
-        const inp = document.getElementById('ai-input');
-        if (inp) {
-          inp.value = `${name} i\u00e7in \u00f6zel tasar\u0131m istiyorum`;
-          inp.dispatchEvent(new Event('input'));
-          inp.focus();
-        }
-      }, 600);
-      e.stopPropagation();
-    });
-  });
-
   renderPagination(totalPages);
   // Scroll to shop top when changing page
   if (page !== 1) {
@@ -375,121 +308,39 @@ function renderPagination(totalPages) {
   });
 }
 
-// ── Card HTML ─────────────────────────────────────────
+// ── Card HTML — Sadeleştirilmiş (yalnızca önizleme + fiyat aralığı) ─────────────
 function renderProductCard(p) {
-  const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating % 1 >= 0.5 ? '½' : '');
-  const defMat = MATERIALS_DB[p.defaultMaterial];
-  const defQ   = QUALITIES_DB.find(q => q.id === p.defaultQuality);
-  const defPrice = Math.round(p.price * defMat.mult * defQ.mult);
-
-  const matChips = p.availableMaterials.map(mid => {
-    const m = MATERIALS_DB[mid];
-    return `<button class="mat-chip ${mid===p.defaultMaterial?'active':''}" data-product="${p.id}" data-mat="${mid}" title="${m.desc}">
-      <span class="mat-chip-icon">${m.icon}</span>${m.name}
-    </button>`;
-  }).join('');
-
-  const qualChips = QUALITIES_DB.map(q => `
-    <button class="qual-chip ${q.id===p.defaultQuality?'active':''}" data-product="${p.id}" data-qual="${q.id}" title="${q.id}">
-      <span>${q.icon}</span><span>${q.name}</span><small>${q.layer}</small>
-    </button>`).join('');
-
-  const colorSwatches = p.colors.map((c, i) => `
-    <button class="color-swatch ${i===0?'active':''}" data-product="${p.id}" data-hex="${c.hex}" data-name="${c.name}"
-      style="background:${c.hex}" title="${c.name}" aria-label="${c.name}"></button>`).join('');
+  // Malzemeye göre min/max fiyat hesapla
+  const prices = p.availableMaterials.map(mid => {
+    const matMult = MATERIALS_DB[mid].mult;
+    const minQ = Math.min(...QUALITIES_DB.map(q => q.mult));
+    const maxQ = Math.max(...QUALITIES_DB.map(q => q.mult));
+    return {
+      min: Math.round(p.price * matMult * minQ),
+      max: Math.round(p.price * matMult * maxQ),
+    };
+  });
+  const minPrice = Math.min(...prices.map(pr => pr.min));
+  const maxPrice = Math.max(...prices.map(pr => pr.max));
 
   return `
-    <div class="shop-card reveal" data-category="${p.category}" data-id="${p.id}" id="card-${p.id}">
+    <div class="shop-card reveal" data-category="${p.category}" data-id="${p.id}" id="card-${p.id}"
+         style="cursor:pointer;"
+         onclick="window.open('/product.html?id=${p.id}', '_blank')">
       <!-- 3D Viewer -->
       <div class="shop-card-viewer">
         <canvas id="canvas-${p.id}" class="shop-canvas"></canvas>
         <div class="shop-card-badge" style="background:${p.badgeColor}22;color:${p.badgeColor};border-color:${p.badgeColor}44">${p.badge}</div>
-        <button class="shop-wish-btn" data-id="${p.id}" aria-label="Favorilere ekle">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-          </svg>
-        </button>
-        ${p.id === 'custom-upload' ? `
-        <div class="shop-upload-overlay" id="upload-overlay-${p.id}">
-          <input type="file" id="file-input-${p.id}" accept=".stl" style="display:none;" />
-          <button class="btn-primary" onclick="document.getElementById('file-input-${p.id}').click()" style="padding:8px 12px;font-size:0.85rem;border-radius:8px;">
-            STL Seç
-          </button>
-        </div>` : ''}
         <div class="shop-drag-hint">↺ Döndür</div>
       </div>
 
-      <!-- Color Picker -->
-      <div class="shop-color-bar">
-        <span class="shop-color-label" id="color-label-${p.id}">${p.colors[0].name}</span>
-        <div class="shop-color-swatches">${colorSwatches}</div>
-      </div>
-
-      <!-- Body -->
-      <div class="shop-card-body">
-        <!-- Name + Price -->
-        <div class="shop-card-meta">
-          <div>
-            <h3 class="shop-card-name">${p.name}</h3>
-            <p class="shop-card-sub">${p.subtitle}</p>
-          </div>
-          <div>
-            <div class="shop-card-price" id="price-${p.id}" style="color:${p.accentColor}">₺${defPrice}</div>
-            <div class="shop-base-price" id="base-price-${p.id}" style="color:${p.accentColor}44">₺${p.price} baz</div>
-          </div>
-        </div>
-
-        <!-- Rating + Dims -->
-        <div class="shop-card-stats">
-          <div class="shop-rating">
-            <span class="shop-stars" style="color:${p.accentColor}">${stars}</span>
-            <span class="shop-rating-val">${p.rating}</span>
-            <span class="shop-rating-count">(${p.reviews})</span>
-          </div>
-          <div class="shop-dims">📐 ${p.dims}</div>
-        </div>
-
-        <!-- Material selector -->
-        <div class="shop-section-label">🧪 Filament Malzeme</div>
-        <div class="shop-mat-chips" id="mat-chips-${p.id}">${matChips}</div>
-
-        <!-- Mat description -->
-        <div class="shop-mat-desc" id="mat-desc-${p.id}">${defMat.desc}</div>
-
-        <!-- Quality selector -->
-        <div class="shop-section-label">🎯 Baskı Kalitesi</div>
-        <div class="shop-qual-chips" id="qual-chips-${p.id}">${qualChips}</div>
-
-        <!-- Price breakdown -->
-        <div class="shop-price-breakdown" id="breakdown-${p.id}">
-          <div class="breakdown-row">
-            <span>Baz fiyat</span><span>₺${p.price}</span>
-          </div>
-          <div class="breakdown-row">
-            <span>Malzeme (${defMat.name})</span><span>×${defMat.mult.toFixed(2)}</span>
-          </div>
-          <div class="breakdown-row">
-            <span>Kalite (${defQ.name})</span><span>×${defQ.mult.toFixed(2)}</span>
-          </div>
-          <div class="breakdown-total">
-            <span>Toplam</span><span id="breakdown-total-${p.id}" style="color:${p.accentColor}">₺${defPrice}</span>
-          </div>
-        </div>
-
-        <!-- CTA -->
-        <div class="shop-card-footer">
-          <button class="shop-add-btn" data-id="${p.id}" style="--accent:${p.accentColor}">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
-              <path d="M16 10a4 4 0 01-8 0"/>
-            </svg>
-            Sepete Ekle
-          </button>
-          <button class="shop-ai-btn" data-id="${p.id}" data-name="${p.name}" title="AI ile özelleştir">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/>
-            </svg>
-          </button>
+      <!-- Body — sade kart altı (yalnızca isim, alt başlık ve malzemeye göre min-max fiyat) -->
+      <div class="shop-card-body shop-card-body--simple">
+        <h3 class="shop-card-name">${p.name}</h3>
+        <p class="shop-card-sub">${p.subtitle}</p>
+        <div class="shop-card-price-range">
+          <span class="price-range-label">Fiyat Aralığı:</span>
+          <span class="price-range-value">₺${minPrice} - ₺${maxPrice}</span>
         </div>
       </div>
     </div>
@@ -503,7 +354,7 @@ function init3DCard(canvas, product) {
   const scene    = new THREE.Scene();
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 0);
+  renderer.setClearColor(0x060A14, 0); // Derin koyu mavi — maksimum kontrast
 
   const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
   camera.position.set(0, 0.6, 5.5);
@@ -518,30 +369,34 @@ function init3DCard(canvas, product) {
   resize();
   new ResizeObserver(resize).observe(canvas.parentElement);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0x0a1628, 1.0));
+  // TOK GÖRÜNÜM — Güçlü, doygun ışıklandırma
+  scene.add(new THREE.AmbientLight(0x0D1633, 2.4)); // Derin mavi ambient
   const col = new THREE.Color(product.colors[0].hex);
 
-  const keyLight  = new THREE.PointLight(col, 4.0, 22);
+  const keyLight  = new THREE.PointLight(0xFFFFFF, 5.0, 28);  // Çok güçlü beyaz ürün ışığı
   keyLight.position.set(3, 5, 4);
   scene.add(keyLight);
 
-  const fillLight = new THREE.PointLight(0x7B2FFF, 1.8, 18);
+  const fillLight = new THREE.PointLight(0x7B2FFF, 2.8, 20); // Dramatik mor dolgu
   fillLight.position.set(-4, -2, 2);
   scene.add(fillLight);
 
-  const rimLight = new THREE.DirectionalLight(0xffffff, 0.5);
+  const rimLight = new THREE.DirectionalLight(0xC8D8FF, 1.2); // Güçlü rim ışık
   rimLight.position.set(0, 8, -6);
   scene.add(rimLight);
+
+  const topLight = new THREE.PointLight(0xFFFFFF, 1.0, 15); // Üst dolgu
+  topLight.position.set(0, 6, 0);
+  scene.add(topLight);
 
   // Build model
   const group = new THREE.Group();
   product.buildFn(group, col);
   scene.add(group);
 
-  // Floor grid
+  // Floor grid — ince ama görünür
   const gridGeo = new THREE.PlaneGeometry(7, 7, 12, 12);
-  const gridMat = new THREE.MeshBasicMaterial({ color: col, wireframe: true, transparent: true, opacity: 0.035 });
+  const gridMat = new THREE.MeshBasicMaterial({ color: 0x1a2a5e, wireframe: true, transparent: true, opacity: 0.06 });
   const grid = new THREE.Mesh(gridGeo, gridMat);
   grid.rotation.x = -Math.PI / 2;
   grid.position.y = -1.8;
@@ -602,7 +457,8 @@ function init3DCard(canvas, product) {
       group.rotation.x += velX;
     }
     velX *= 0.86; velY *= 0.86;
-    keyLight.intensity = 3.5 + Math.sin(t * 2.0) * 0.55;
+    // Daha sakin ışık titreşimi — göz yormaz
+    keyLight.intensity = 3.0 + Math.sin(t * 1.4) * 0.28;
     renderer.render(scene, camera);
   }
 
@@ -629,14 +485,12 @@ function updateModelColor(productId, hexColor) {
 // MODEL BUILDERS — Detailed
 // ══════════════════════════════════════════════════════
 
-function makePrimaryMat(col, shine = 140) {
-  return new THREE.MeshPhongMaterial({
-    color: 0x060c18, emissive: col, emissiveIntensity: 0.10,
-    specular: col, shininess: shine,
-  });
+function makePrimaryMat(col) {
+  // Düz renk — MeshLambertMaterial (tok, sade)
+  return new THREE.MeshLambertMaterial({ color: col });
 }
-function makeAccentMat(col, opacity = 0.80) {
-  return new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity });
+function makeAccentMat(col, opacity = 0.90) {
+  return new THREE.MeshLambertMaterial({ color: col, transparent: true, opacity });
 }
 function makeWireMat(col) {
   return new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.0 });
@@ -737,9 +591,7 @@ function buildDroneFrame(group, col) {
   const camBody = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.30, 0.28), pm);
   camBody.position.set(0, 0.05, -0.60);
   group.add(camBody);
-  const lens = new THREE.Mesh(new THREE.SphereGeometry(0.10, 16, 16), new THREE.MeshPhongMaterial({
-    color: 0x000a14, emissive: col, emissiveIntensity: 0.30, specular: col, shininess: 300
-  }));
+  const lens = new THREE.Mesh(new THREE.SphereGeometry(0.10, 16, 16), makeAccentMat(0x000a14, 0.95));
   lens.position.set(0, 0.05, -0.77);
   group.add(lens);
 
@@ -798,9 +650,8 @@ function buildWaveVase(group, col) {
   }
 
   const geo = new THREE.LatheGeometry(points, 48);
-  const pm  = new THREE.MeshPhongMaterial({
-    color: 0x030d0a, emissive: col, emissiveIntensity: 0.14,
-    specular: col, shininess: 200, transparent: true, opacity: 0.94, side: THREE.DoubleSide,
+  const pm  = new THREE.MeshLambertMaterial({
+    color: col, transparent: true, opacity: 0.94, side: THREE.DoubleSide
   });
   const wm = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.0 });
 
@@ -882,7 +733,7 @@ function buildGearSet(group, col) {
   // Axle cylinders
   [[g1.position.x, 0.95], [g2.position.x, 0.58], [g3.position.x, 0.36]].forEach(([x, r]) => {
     const axle = new THREE.Mesh(new THREE.CylinderGeometry(r*0.18, r*0.18, 0.70, 12),
-      new THREE.MeshPhongMaterial({ color: col, emissive: col, emissiveIntensity: 0.40 }));
+      makeAccentMat(col, 0.95));
     axle.position.set(x, 0.25, g3.position.z);
     group.add(axle);
   });
@@ -934,7 +785,7 @@ function buildPhoneStand(group, col) {
   // Rubber pad strips (slight contrast)
   [-0.55, 0.55].forEach(x => {
     const pad = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.18, 0.26),
-      new THREE.MeshPhongMaterial({ color: 0x050505, emissive: col, emissiveIntensity: 0.04, shininess: 50 }));
+      new THREE.MeshLambertMaterial({ color: 0x111116 }));
     pad.position.set(x, -0.95, 0.14);
     group.add(pad);
   });
@@ -980,7 +831,7 @@ function buildCableOrganizer(group, col) {
   for (let i = 0; i < 8; i++) {
     const x = -1.68 + i * 0.48;
     const arch = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.055, 10, 20, Math.PI),
-      new THREE.MeshPhongMaterial({ color: 0x060610, emissive: col, emissiveIntensity: 0.18, specular: col, shininess: 130 }));
+      makeAccentMat(col, 0.90));
     arch.position.set(x, 0.28, 0);
     arch.rotation.z = Math.PI;
     group.add(arch);
@@ -1016,7 +867,7 @@ function buildCableOrganizer(group, col) {
 // 6 ── Mini House ─────────────────────────────────────
 function buildMiniHouse(group, col) {
   const wallMat = makePrimaryMat(col, 120);
-  const roofMat = new THREE.MeshPhongMaterial({ color: 0x050810, emissive: 0x5b21b6, emissiveIntensity: 0.15, specular: 0x8b5cf6, shininess: 90 });
+  const roofMat = new THREE.MeshLambertMaterial({ color: 0x3b21b6 });
   const winMat  = makeAccentMat(col, 0.85);
   const am      = makeAccentMat(col, 0.45);
 
@@ -1080,7 +931,7 @@ function buildMiniHouse(group, col) {
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.38, 8), wallMat);
   trunk.position.set(0.92, -0.60, 0.85);
   group.add(trunk);
-  const foliage = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.55, 8), new THREE.MeshPhongMaterial({ color: 0x052208, emissive: 0x16a34a, emissiveIntensity: 0.20, shininess: 80 }));
+  const foliage = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.55, 8), new THREE.MeshLambertMaterial({ color: 0x16a34a }));
   foliage.position.set(0.92, -0.22, 0.85);
   group.add(foliage);
 
@@ -1227,7 +1078,7 @@ function buildPlanter(group, col) {
 
   // Inner surface
   const inner = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.48, 1.50, 6),
-    new THREE.MeshPhongMaterial({ color: 0x020804, emissive: col, emissiveIntensity: 0.06, side: THREE.BackSide }));
+    new THREE.MeshLambertMaterial({ color: 0x020804, side: THREE.BackSide }));
   inner.position.y = 0.04;
   group.add(inner);
 
@@ -1279,7 +1130,7 @@ function buildFidgetSpinner(group, col) {
   // 3 arms at 120° each
   [0, Math.PI*2/3, Math.PI*4/3].forEach(a => {
     const arm = new THREE.Mesh(new THREE.BoxGeometry(0.80, 0.22, 0.18),
-      new THREE.MeshPhongMaterial({ color: 0x060c18, emissive: col, emissiveIntensity: 0.09, specular: col, shininess: 160 }));
+      makeAccentMat(col, 0.95));
     arm.position.set(Math.cos(a)*0.62, 0, Math.sin(a)*0.62);
     arm.rotation.y = a + Math.PI/2;
     group.add(arm);
@@ -1323,7 +1174,7 @@ function buildGoProMount(group, col) {
 
   // Lens circle
   const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.06, 20),
-    new THREE.MeshPhongMaterial({ color: 0x000510, emissive: col, emissiveIntensity: 0.35, specular: col, shininess: 280 }));
+    makeAccentMat(0x000510, 0.90));
   lens.rotation.x = Math.PI/2;
   lens.position.set(0, 0.85, 0.10);
   group.add(lens);
@@ -1605,4 +1456,18 @@ function showToast(msg) {
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 380); }, 3000);
 }
 
-export { PRODUCTS };
+export {
+  PRODUCTS,
+  buildCustomUpload,
+  buildDroneFrame,
+  buildGearSet,
+  buildPhoneStand,
+  buildCableOrganizer,
+  buildMiniHouse,
+  buildRobotJoint,
+  buildHeadphoneStand,
+  buildPlanter,
+  buildFidgetSpinner,
+  buildGoProMount,
+  buildHexStorage
+};

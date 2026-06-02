@@ -321,7 +321,7 @@ function renderAISection() {
             <div class="ai-preview-live">
               <span class="viewer-live-dot"></span> CANLI 3D ÖNİZLEME
             </div>
-            <div class="ai-model-label" id="ai-model-label">FPV Drone</div>
+            <div class="ai-model-label" id="ai-model-label">Dalga Vazo</div>
           </div>
 
           <!-- 3D Canvas -->
@@ -401,8 +401,8 @@ function initAI3DViewer() {
   new ResizeObserver(resize).observe(canvas.parentElement);
 
   // Lighting
-  aiState.scene.add(new THREE.AmbientLight(0x081420, 1.0));
-  aiState.keyLight = new THREE.PointLight(new THREE.Color('#34D399'), 4.5, 25);
+  aiState.scene.add(new THREE.AmbientLight(0x060f1c, 1.4));
+  aiState.keyLight = new THREE.PointLight(0xffffff, 4.2, 25);
   aiState.keyLight.position.set(3, 5, 4);
   aiState.scene.add(aiState.keyLight);
 
@@ -466,7 +466,6 @@ function buildAIVase(style = 'wave') {
   }
 
   const col   = new THREE.Color(aiState.vaseColor);
-  aiState.keyLight.color.set(col);
   aiState.group = new THREE.Group();
 
   const points = [];
@@ -497,22 +496,24 @@ function buildAIVase(style = 'wave') {
 
   const geo = new THREE.LatheGeometry(points, 52);
   const mat = new THREE.MeshPhongMaterial({
-    color: 0x030c0a, emissive: col, emissiveIntensity: 0.20,
-    specular: col, shininess: 200, transparent: false, side: THREE.DoubleSide,
+    color: col,
+    specular: 0x333333,
+    shininess: 80,
+    side: THREE.DoubleSide,
   });
 
   aiState.group.add(new THREE.Mesh(geo, mat));
 
   // Foot ring
   const foot = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.028, 8, 32),
-    new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.75 }));
+    new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 }));
   foot.position.y = -1.88;
   foot.rotation.x = Math.PI/2;
   aiState.group.add(foot);
 
   // Rim ring
   const rim = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.032, 8, 32),
-    new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.80 }));
+    new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 }));
   rim.position.y = 1.88;
   rim.rotation.x = Math.PI/2;
   aiState.group.add(rim);
@@ -529,11 +530,10 @@ function buildAIDrone() {
   }
 
   const col = new THREE.Color(aiState.vaseColor);
-  aiState.keyLight.color.set(col);
   aiState.group = new THREE.Group();
 
-  const pm = new THREE.MeshPhongMaterial({ color: 0x060c18, emissive: col, emissiveIntensity: 0.10, specular: col, shininess: 150 });
-  const am = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.85 });
+  const pm = new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 });
+  const am = new THREE.MeshPhongMaterial({ color: 0x00E5FF, emissive: 0x004455, specular: 0xffffff, shininess: 150 });
 
   const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.60, 0.60, 0.16, 8), pm);
   aiState.group.add(plate);
@@ -568,11 +568,10 @@ function buildAIGear() {
     aiState.group.traverse(c => { if (c.isMesh) { c.geometry.dispose(); c.material.dispose(); } });
   }
   const col = new THREE.Color(aiState.vaseColor);
-  aiState.keyLight.color.set(col);
   aiState.group = new THREE.Group();
 
-  const pm = new THREE.MeshPhongMaterial({ color: 0x060c10, emissive: col, emissiveIntensity: 0.10, specular: col, shininess: 170 });
-  const am = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.85 });
+  const pm = new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 60 });
+  const am = new THREE.MeshPhongMaterial({ color: 0x00E5FF, emissive: 0x004455, specular: 0xffffff, shininess: 150 });
 
   function gearMesh(teeth, r, thick) {
     const shape = new THREE.Shape();
@@ -597,8 +596,7 @@ function buildAIGear() {
   const g2 = gearMesh(12, 0.58, 0.28); g2.position.set(0.92, 0, 0); g2.rotation.x = -Math.PI/2;
   [g1, g2].forEach(g => aiState.group.add(g));
 
-  const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.60, 12),
-    new THREE.MeshPhongMaterial({ color: col, emissive: col, emissiveIntensity: 0.40 }));
+  const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.60, 12), pm);
   axle.position.set(-0.5, 0.24, 0);
   aiState.group.add(axle);
 
@@ -614,11 +612,10 @@ function buildAIPhone() {
     aiState.group.traverse(c => { if (c.isMesh) { c.geometry.dispose(); c.material.dispose(); } });
   }
   const col = new THREE.Color(aiState.vaseColor);
-  aiState.keyLight.color.set(col);
   aiState.group = new THREE.Group();
 
-  const pm = new THREE.MeshPhongMaterial({ color: 0x060c18, emissive: col, emissiveIntensity: 0.09, specular: col, shininess: 130 });
-  const am = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.80 });
+  const pm = new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 });
+  const am = new THREE.MeshPhongMaterial({ color: 0x00E5FF, emissive: 0x004455, specular: 0xffffff, shininess: 150 });
 
   const base = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.85, 0.14, 32), pm);
   base.position.y = -1.1;
@@ -649,7 +646,7 @@ function switchVaseStyle(style) {
   aiState.vaseStyle = style;
   buildAIVase(style);
 
-  const labels = { wave:'FPV Drone', straight:'Düz Silindirik Vazo', spiral:'Spiral Vazo', tapered:'Konik Vazo', bulge:'Şişkin Vazo' };
+  const labels = { wave:'Dalga Vazo', straight:'Düz Silindirik Vazo', spiral:'Spiral Vazo', tapered:'Konik Vazo', bulge:'Şişkin Vazo' };
   const sizes  = { wave:'80×80×180mm', straight:'80×80×180mm', spiral:'80×80×200mm', tapered:'90×45×180mm', bulge:'90×90×170mm' };
   const times  = { wave:'~5 saat', straight:'~4 saat', spiral:'~6 saat', tapered:'~4.5 saat', bulge:'~5.5 saat' };
 
@@ -684,8 +681,6 @@ function scaleAIModel(factor) {
 
 function tintAIModel(hex) {
   aiState.vaseColor = hex;
-  const col = new THREE.Color(hex);
-  aiState.keyLight.color.set(col);
   if (aiState.currentModel === 'vase') buildAIVase(aiState.vaseStyle);
   else if (aiState.currentModel === 'drone') buildAIDrone();
   else if (aiState.currentModel === 'gear') buildAIGear();

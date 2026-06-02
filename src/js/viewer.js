@@ -396,7 +396,7 @@ function initViewerCanvas() {
   const wrapper = document.getElementById('viewer-canvas-wrapper');
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x080f1c);
+  scene.background = new THREE.Color(0x060A14); // Derin koyu mavi — tok kontrast
 
   const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.01, 1000);
   camera.position.set(0, 2, 6);
@@ -434,33 +434,36 @@ function initViewerCanvas() {
   controls.maxDistance = 200;
   controls.saveState();
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0x445566, 1.2));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+  // Lights — TOK GÖRÜNÜM: güçlü, doygun
+  scene.add(new THREE.AmbientLight(0x0D1633, 2.5));       // Derin mavi ambient
+  const keyLight = new THREE.DirectionalLight(0xFFFFFF, 3.0); // Güçlü beyaz key
   keyLight.position.set(5, 8, 6);
   keyLight.castShadow = true;
   scene.add(keyLight);
-  const fillLight = new THREE.DirectionalLight(0x4488ff, 0.5);
+  const fillLight = new THREE.DirectionalLight(0x7B2FFF, 1.6); // Dramatik mor fill
   fillLight.position.set(-5, -3, -4);
   scene.add(fillLight);
-  const rimLight = new THREE.PointLight(0xEDEDED, 1.0, 80);
+  const rimLight = new THREE.PointLight(0x00E5FF, 1.4, 80); // Cyan rim
   rimLight.position.set(0, 10, -8);
   scene.add(rimLight);
+  const topLight = new THREE.PointLight(0xFFFFFF, 0.8, 50); // Üst dolgu
+  topLight.position.set(0, 12, 5);
+  scene.add(topLight);
 
-  // Grid floor
-  const grid = new THREE.GridHelper(20, 30, 0x1a2a44, 0x0d1829);
+  // Grid floor — görünür, derin mavi
+  const grid = new THREE.GridHelper(20, 30, 0x1a2a6e, 0x0d1429);
   grid.position.y = -1.5;
   scene.add(grid);
 
-  // Show something in the empty viewer — a subtle rotating cube placeholder
+  // Placeholder küp — tok ve dramatik
   const placeholderGeo = new THREE.BoxGeometry(1, 1, 1);
   const placeholderMat = new THREE.MeshPhongMaterial({
-    color: 0x7B2FFF,
-    emissive: 0x220044,
-    specular: 0xffffff,
-    shininess: 80,
+    color: 0x3B2FFF,
+    emissive: 0x1A0880,
+    specular: 0xC0C0FF,
+    shininess: 100,
     transparent: true,
-    opacity: 0.18,
+    opacity: 0.55,
     wireframe: true,
   });
   const placeholder = new THREE.Mesh(placeholderGeo, placeholderMat);

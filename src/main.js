@@ -10,6 +10,14 @@ import { initAnimations } from './js/animations.js';
 import { initShop }       from './js/shop.js';
 import { initAI }         from './js/ai.js';
 import { initViewer }     from './js/viewer.js';
+import { initAuth }       from './js/auth.js';
+import { initCart }       from './js/cart.js';
+
+// Force scroll to top on page load/refresh
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
 
 // Boot sequence
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,4 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initShop();
   initViewer();
   initAI();
+  initAuth();
+  initCart();
 });

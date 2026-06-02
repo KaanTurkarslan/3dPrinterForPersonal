@@ -150,7 +150,7 @@ function initMiniViewer() {
   renderer.setClearColor(0x000000, 0);
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 0, 5);
+  camera.position.set(0, 0, 5.2);
 
   function resize() {
     const p = canvas.parentElement;
@@ -163,91 +163,97 @@ function initMiniViewer() {
   window.addEventListener('resize', resize, { passive: true });
 
   // ── Lighting ──
-  scene.add(new THREE.AmbientLight(0x001a33, 0.6));
+  scene.add(new THREE.AmbientLight(0x0a1128, 1.4));
 
-  const cLight = new THREE.PointLight(0xEDEDED, 2.5, 18);
-  cLight.position.set(3, 3, 3);
+  const cLight = new THREE.PointLight(0x00E5FF, 3.5, 20);
+  cLight.position.set(3, 4, 3);
   scene.add(cLight);
 
-  const vLight = new THREE.PointLight(0x7B2FFF, 1.8, 18);
+  const vLight = new THREE.PointLight(0x7B2FFF, 2.8, 20);
   vLight.position.set(-3, -2, 2);
   scene.add(vLight);
 
+  // ── Materials ──
+  const bodyMat = new THREE.MeshPhongMaterial({
+    color: 0x0E1424,
+    emissive: 0x050812,
+    specular: 0x7BAAF7,
+    shininess: 120,
+  });
+
+  const accentMat = new THREE.MeshPhongMaterial({
+    color: 0x00E5FF,
+    emissive: 0x005566,
+    specular: 0xffffff,
+    shininess: 200,
+    transparent: true,
+    opacity: 0.85,
+  });
+
   // ── Group ──
   const group = new THREE.Group();
+  const props = [];
 
-  // Core body
-  const bodyGeo = new THREE.OctahedronGeometry(1.1, 2);
-  const bodyMat = new THREE.MeshPhongMaterial({
-    color: 0x0a1628,
-    emissive: 0x001833,
-    specular: 0xEDEDED,
-    shininess: 120,
-    transparent: true,
-    opacity: 0.92,
-  });
-  group.add(new THREE.Mesh(bodyGeo, bodyMat));
+  // Center plate (chassis)
+  const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.14, 8), bodyMat);
+  group.add(plate);
 
-  // Wireframe shell
-  const wireMat = new THREE.MeshBasicMaterial({
-    color: 0xEDEDED,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.0,
-  });
-  const wireMesh = new THREE.Mesh(bodyGeo.clone(), wireMat);
-  wireMesh.scale.setScalar(1.025);
-  group.add(wireMesh);
-
-  // Inner glow core
-  const coreMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(0.55, 16, 16),
-    new THREE.MeshBasicMaterial({ color: 0xEDEDED, transparent: true, opacity: 0.07 })
-  );
-  group.add(coreMesh);
-
-  // Orbiting rings (3)
-  const ringData = [
-    { r: 1.55, rot: [Math.PI/3, 0, 0],          color: 0xEDEDED, opacity: 0.45 },
-    { r: 1.75, rot: [Math.PI/5, Math.PI/4, 0],   color: 0x7B2FFF, opacity: 0.30 },
-    { r: 1.95, rot: [Math.PI/2.5, -Math.PI/3, 0],color: 0x004466, opacity: 0.20 },
-  ];
-  const rings = [];
-  ringData.forEach(d => {
-    const mesh = new THREE.Mesh(
-      new THREE.TorusGeometry(d.r, 0.013, 8, 80),
-      new THREE.MeshBasicMaterial({ color: d.color, transparent: true, opacity: d.opacity, blending: THREE.AdditiveBlending })
-    );
-    mesh.rotation.set(...d.rot);
-    group.add(mesh);
-    rings.push(mesh);
+  // Arm bars (X layout)
+  [0, Math.PI/2].forEach(a => {
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.08, 0.12), bodyMat);
+    beam.rotation.y = a;
+    group.add(beam);
   });
 
-  // Orbiting dots (10)
-  const dots = [];
-  for (let i = 0; i < 10; i++) {
-    const dot = new THREE.Mesh(
-      new THREE.SphereGeometry(0.04, 8, 8),
-      new THREE.MeshBasicMaterial({
-        color: i % 2 === 0 ? 0xEDEDED : 0xA1A1AA,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-      })
-    );
-    const angle = (i / 10) * Math.PI * 2;
-    dot.userData = { angle, speed: 0.25 + Math.random() * 0.35, radius: 1.65 + Math.random() * 0.3 };
-    group.add(dot);
-    dots.push(dot);
-  }
+  // Motor Pods and Propellers
+  const corners = [[0.9, 0.9], [-0.9, 0.9], [0.9, -0.9], [-0.9, -0.9]];
+  corners.forEach(([x, z]) => {
+    // Pod
+    const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.16, 0.22, 12), bodyMat);
+    pod.position.set(x, 0.06, z);
+    group.add(pod);
 
+    // Propeller Group (so we can rotate it locally)
+    const propGroup = new THREE.Group();
+    propGroup.position.set(x, 0.18, z);
+
+    // Torus blade outline (disc)
+    const propDisc = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.015, 4, 24), accentMat);
+    propDisc.rotation.x = Math.PI/2;
+    propGroup.add(propDisc);
+
+    // Blade lines
+    const blade1 = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.01, 0.04), accentMat);
+    const blade2 = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.01, 0.52), accentMat);
+    propGroup.add(blade1);
+    propGroup.add(blade2);
+
+    group.add(propGroup);
+    props.push(propGroup);
+  });
+
+  // Camera pod
+  const cam = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.24, 0.22), bodyMat);
+  cam.position.set(0, 0.05, -0.5);
+  group.add(cam);
+
+  // Camera lens (accent color)
+  const lens = new THREE.Mesh(new THREE.SphereGeometry(0.08, 12, 12), accentMat);
+  lens.position.set(0, 0.05, -0.62);
+  group.add(lens);
+
+  group.scale.setScalar(0.9);
   scene.add(group);
 
+  // Wireframe toggle
   let showWire = false;
   document.getElementById('viewer-wireframe')?.addEventListener('click', () => {
     showWire = !showWire;
-    wireMesh.material.opacity = showWire ? 0.35 : 0.0;
-    bodyMat.wireframe = showWire;
+    group.traverse(child => {
+      if (child.isMesh && child.material) {
+        child.material.wireframe = showWire;
+      }
+    });
   });
 
   // ── Drag rotation ──
@@ -288,32 +294,21 @@ function initMiniViewer() {
 
     if (!isDragging) {
       group.rotation.y += 0.007;
-      group.rotation.x = Math.sin(t * 0.38) * 0.18;
+      group.rotation.x = Math.sin(t * 0.38) * 0.12;
+      group.position.y = Math.sin(t * 1.5) * 0.08; // Subtle hovering bobbing animation
     } else {
       group.rotation.y += velY;
       group.rotation.x += velX;
+      group.position.y += (0 - group.position.y) * 0.1; // return to center
     }
     velX *= 0.88; velY *= 0.88;
 
-    // Animate dots
-    dots.forEach(d => {
-      d.userData.angle += d.userData.speed * 0.012;
-      const a = d.userData.angle;
-      d.position.set(
-        Math.cos(a) * d.userData.radius,
-        Math.sin(a * 0.7) * 0.55,
-        Math.sin(a) * d.userData.radius
-      );
+    // Spin propellers
+    props.forEach((prop, i) => {
+      prop.rotation.y += (i % 2 === 0 ? 0.28 : -0.28);
     });
 
-    // Pulse rings
-    rings.forEach((r, i) => {
-      r.material.opacity = ringData[i].opacity * (0.85 + Math.sin(t * 1.2 + i) * 0.15);
-    });
-
-    // Pulse core glow
-    coreMesh.material.opacity = 0.05 + Math.sin(t * 2.2) * 0.04;
-    cLight.intensity = 2.2 + Math.sin(t * 1.4) * 0.6;
+    cLight.intensity = 3.5 + Math.sin(t * 1.4) * 0.5;
 
     renderer.render(scene, camera);
   }

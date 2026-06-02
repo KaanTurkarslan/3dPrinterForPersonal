@@ -8,6 +8,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        product: path.resolve(__dirname, 'product.html')
+      }
+    }
   },
   server: {
     port: 3000,
