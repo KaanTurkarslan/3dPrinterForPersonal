@@ -47,26 +47,11 @@ function renderViewerSection() {
             <h3 class="upload-dropzone-title">Sürükle & Bırak</h3>
             <p class="upload-dropzone-sub">veya tıklayarak dosya seçin</p>
             <p class="upload-dropzone-formats">Desteklenen: .stl</p>
-            <input type="file" id="viewer-file-input" accept=".stl" style="display:none;" />
+            <input type="file" id="viewer-file-input" accept=".stl" style="display:none;" multiple />
           </div>
 
-          <!-- File Info (shown after upload) -->
-          <div class="upload-file-info" id="upload-file-info" style="display:none;">
-            <div class="file-info-icon">
-              <svg width="24" height="24" fill="none" stroke="#34D399" stroke-width="2" viewBox="0 0 24 24">
-                <polyline points="20,6 9,17 4,12"/>
-              </svg>
-            </div>
-            <div class="file-info-details">
-              <div class="file-info-name" id="file-info-name">model.stl</div>
-              <div class="file-info-size" id="file-info-size">0 KB</div>
-            </div>
-            <button class="file-info-clear" id="file-info-clear" title="Kaldır">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
+          <!-- File List (shown after uploads) -->
+          <div class="viewer-file-list" id="viewer-file-list" style="display:none;"></div>
 
           <!-- Color Picker -->
           <div class="viewer-color-section">
@@ -142,19 +127,15 @@ function renderViewerSection() {
           </div>
           <div class="viewer-canvas-stats" id="viewer-canvas-stats" style="display:none;">
             <div class="viewer-stat">
-              <span class="viewer-stat-label">Üçgen</span>
-              <span class="viewer-stat-val" id="stat-triangles">-</span>
-            </div>
-            <div class="viewer-stat">
-              <span class="viewer-stat-label">Boyut X</span>
+              <span class="viewer-stat-label">Yatay Uzunluk</span>
               <span class="viewer-stat-val" id="stat-x">-</span>
             </div>
             <div class="viewer-stat">
-              <span class="viewer-stat-label">Boyut Y</span>
+              <span class="viewer-stat-label">En</span>
               <span class="viewer-stat-val" id="stat-y">-</span>
             </div>
             <div class="viewer-stat">
-              <span class="viewer-stat-label">Boyut Z</span>
+              <span class="viewer-stat-label">Uzunluk</span>
               <span class="viewer-stat-val" id="stat-z">-</span>
             </div>
           </div>
@@ -403,8 +384,7 @@ function initViewerCanvas() {
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
   // Size the renderer correctly once the wrapper has layout
   function updateSize() {
@@ -434,20 +414,19 @@ function initViewerCanvas() {
   controls.maxDistance = 200;
   controls.saveState();
 
-  // Lights — TOK GÖRÜNÜM: güçlü, doygun
-  scene.add(new THREE.AmbientLight(0x0D1633, 2.5));       // Derin mavi ambient
-  const keyLight = new THREE.DirectionalLight(0xFFFFFF, 3.0); // Güçlü beyaz key
+  // Lights — Soft Studio
+  scene.add(new THREE.AmbientLight(0xffffff, 1.8));
+  const keyLight = new THREE.DirectionalLight(0xfff8f0, 3.5);
   keyLight.position.set(5, 8, 6);
-  keyLight.castShadow = true;
   scene.add(keyLight);
-  const fillLight = new THREE.DirectionalLight(0x7B2FFF, 1.6); // Dramatik mor fill
-  fillLight.position.set(-5, -3, -4);
+  const fillLight = new THREE.DirectionalLight(0xf0f5ff, 1.5);
+  fillLight.position.set(-5, 2, 3);
   scene.add(fillLight);
-  const rimLight = new THREE.PointLight(0x00E5FF, 1.4, 80); // Cyan rim
+  const rimLight = new THREE.PointLight(0xddeeff, 2.0, 80);
   rimLight.position.set(0, 10, -8);
   scene.add(rimLight);
-  const topLight = new THREE.PointLight(0xFFFFFF, 0.8, 50); // Üst dolgu
-  topLight.position.set(0, 12, 5);
+  const topLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  topLight.position.set(0, -5, 5);
   scene.add(topLight);
 
   // Grid floor — görünür, derin mavi
@@ -481,6 +460,8 @@ function initViewerCanvas() {
     }),
     wireframeMode: false,
     grid,
+    modelSize: null,
+    selectedMaterial: 'PLA+',
   };
 
   // Render loop
@@ -542,14 +523,15 @@ function initViewerInteractions() {
   });
 
   // Material chips (price update)
-  const basePrices = { 'PLA+': 50, 'PETG': 65, 'ABS': 60, 'TPU': 75, 'CF-PLA': 120, 'Resin': 140 };
   document.querySelectorAll('.viewer-mat-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       document.querySelectorAll('.viewer-mat-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       const mat = chip.dataset.mat;
-      const priceEl = document.getElementById('viewer-price');
-      if (priceEl) priceEl.textContent = `₺${basePrices[mat] || 50}+`;
+      if (viewerState) {
+        viewerState.selectedMaterial = mat;
+      }
+      recalculatePrice();
     });
   });
 
@@ -645,18 +627,19 @@ function handleFile(file) {
 
     viewerState.scene.add(mesh);
     viewerState.mesh = mesh;
+    viewerState.modelSize = size; // Store geometry sizes for dynamic pricing
 
     // Move grid to bottom of model
     const scaledMin = geometry.boundingBox.min.y * scale;
     viewerState.grid.position.y = scaledMin - 0.05;
 
     // Update stats
-    const tris = geometry.index ? geometry.index.count / 3 : geometry.attributes.position.count / 3;
-    document.getElementById('stat-triangles').textContent = Math.round(tris).toLocaleString('tr');
     document.getElementById('stat-x').textContent = `${(size.x).toFixed(1)} mm`;
     document.getElementById('stat-y').textContent = `${(size.y).toFixed(1)} mm`;
     document.getElementById('stat-z').textContent = `${(size.z).toFixed(1)} mm`;
     document.getElementById('viewer-canvas-stats').style.display = 'flex';
+
+    recalculatePrice(); // Recalculate price dynamically based on size and material
 
     fitCamera();
     URL.revokeObjectURL(url);
@@ -673,12 +656,16 @@ function clearFile() {
     viewerState.mesh.geometry.dispose();
     viewerState.mesh = null;
   }
+  if (viewerState) {
+    viewerState.modelSize = null; // Clear dimension metrics
+  }
   // Show placeholder again
   if (viewerState?.placeholder) viewerState.placeholder.visible = true;
   document.getElementById('upload-file-info').style.display = 'none';
   document.getElementById('viewer-canvas-hint').style.display = 'flex';
   document.getElementById('viewer-canvas-stats').style.display = 'none';
   document.getElementById('viewer-file-input').value = '';
+  recalculatePrice(); // Reset price display
 }
 
 function fitCamera() {
@@ -710,4 +697,61 @@ function showViewerToast(msg) {
   c.appendChild(t);
   requestAnimationFrame(() => t.classList.add('show'));
   setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 380); }, 3000);
+}
+
+// ══════════════════════════════════════════════════════
+// DYNAMIC PRICING ENGINE WITH 60% PROFIT MARGIN
+// ══════════════════════════════════════════════════════
+const FILAMENT_COSTS = {
+  'PLA+':   { pricePerGram: 0.55, density: 1.24 }, // ~550 TL per 1kg roll
+  'PETG':   { pricePerGram: 0.70, density: 1.27 }, // ~700 TL per 1kg roll
+  'ABS':    { pricePerGram: 0.65, density: 1.04 }, // ~650 TL per 1kg roll
+  'TPU':    { pricePerGram: 0.85, density: 1.20 }, // ~850 TL per 1kg roll
+  'CF-PLA': { pricePerGram: 1.30, density: 1.30 }, // ~1300 TL per 1kg roll
+  'Resin':  { pricePerGram: 1.50, density: 1.15 }  // ~1500 TL per 1kg roll
+};
+
+function recalculatePrice() {
+  const priceEl = document.getElementById('viewer-price');
+  if (!priceEl) return;
+
+  if (!viewerState || !viewerState.modelSize) {
+    const basePrices = { 'PLA+': 50, 'PETG': 65, 'ABS': 60, 'TPU': 75, 'CF-PLA': 120, 'Resin': 140 };
+    const mat = viewerState ? viewerState.selectedMaterial : 'PLA+';
+    priceEl.textContent = `₺${basePrices[mat] || 50}+`;
+    return;
+  }
+
+  const size = viewerState.modelSize;
+  const mat = viewerState.selectedMaterial || 'PLA+';
+  const filInfo = FILAMENT_COSTS[mat] || FILAMENT_COSTS['PLA+'];
+
+  // 1. Calculate raw bounding box volume in cm^3
+  const rawVolume = (size.x * size.y * size.z) / 1000;
+
+  // 2. Adjust density factor based on overall size (smaller parts have higher wall ratio / infill density)
+  let densityMultiplier = 0.22; // default solidity factor (shells + infill)
+  if (rawVolume > 100) densityMultiplier = 0.16;
+  if (rawVolume > 500) densityMultiplier = 0.11;
+
+  // 3. Calculate estimated weight in grams
+  const estWeight = Math.max(1.5, rawVolume * densityMultiplier * filInfo.density);
+
+  // 4. Calculate printing time in hours (approx 18 grams per hour speed)
+  const estTimeHours = Math.max(0.4, estWeight / 18);
+
+  // 5. Electricity cost (150W printer, 6 TL per kWh)
+  const electricityCost = estTimeHours * 0.15 * 6;
+
+  // 6. Filament material cost
+  const materialCost = estWeight * filInfo.pricePerGram;
+
+  // 7. Total manufacturing cost
+  const totalCost = materialCost + electricityCost;
+
+  // 8. Retail price with a 60% profit margin (Price = Cost / 0.40)
+  const price = totalCost / 0.40;
+
+  // Render price rounded to nearest integer
+  priceEl.textContent = `₺${Math.round(price)}`;
 }

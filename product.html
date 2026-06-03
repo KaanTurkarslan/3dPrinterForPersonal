@@ -74,9 +74,22 @@
       border-radius: 20px;
       overflow: hidden;
       border: 1px solid var(--border);
-      background: #060A14;
+      background: #060810;
       aspect-ratio: 1/1;
       position: relative;
+    }
+    /* Vignette overlay */
+    .product-canvas-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%,
+        transparent 45%,
+        rgba(4,5,12,0.45) 80%,
+        rgba(3,4,10,0.75) 100%
+      );
+      pointer-events: none;
+      z-index: 2;
     }
     .product-canvas-wrap canvas {
       width: 100% !important; height: 100% !important;
@@ -322,7 +335,7 @@
 
   <!-- Navbar -->
   <nav class="pnav">
-    <a href="/" class="pnav-logo">
+    <a href="index.html" class="pnav-logo">
       <div class="pnav-logo-icon">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
           <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
@@ -338,7 +351,7 @@
         </svg>
         <span class="nav-cart-badge" id="nav-cart-badge" style="display:none; position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, #7BAAF7, #8B5CF6); color: #fff; font-size: 0.62rem; font-weight: 700; align-items: center; justify-content: center;">0</span>
       </button>
-      <a href="/" class="pnav-back">
+      <a href="index.html" class="pnav-back">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
@@ -386,6 +399,18 @@
             <span class="product-rating-count" id="product-rating-count"></span>
             <span class="product-dims" id="product-dims"></span>
           </div>
+        </div>
+
+        <!-- Description & Source Link -->
+        <div class="config-block" id="description-block" style="display:none;">
+          <div class="config-block-title">📝 Tasarım Açıklaması</div>
+          <p id="product-description" style="font-size: 0.85rem; line-height: 1.6; color: var(--snow); margin-bottom: 14px;"></p>
+          <a id="product-source-link" href="#" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #7BAAF7; text-decoration: none; font-weight: 600;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+            </svg>
+            Printables.com Üzerinde Görüntüle
+          </a>
         </div>
 
         <!-- Material -->
@@ -490,6 +515,12 @@
     }
     window.scrollTo(0, 0);
 
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 30);
+    });
+
     // ── Init ─────────────────────────────────────────────
     initCart();
 
@@ -506,6 +537,16 @@
     }
 
     function initProductPage(p) {
+      // Description & Source Link block
+      const descBlock = document.getElementById('description-block');
+      if (p.id === 'custom-upload') {
+        descBlock.style.display = 'none';
+      } else {
+        descBlock.style.display = 'block';
+        document.getElementById('product-description').textContent = p.description || '';
+        document.getElementById('product-source-link').setAttribute('href', p.printablesUrl || '#');
+      }
+
       // Fill title area
       const badge = document.getElementById('product-badge');
       badge.textContent = p.badge;
@@ -682,8 +723,36 @@
         addProductToCart(item);
       });
 
-      // 3D Scene
-      initScene(p, () => selHex);
+      // Viewport Handling
+      const canvas = document.getElementById('product-canvas');
+      const controls = document.querySelector('.product-canvas-controls');
+      const wrap = document.getElementById('product-canvas-wrap');
+
+      if (p.id === 'custom-upload') {
+        canvas.style.display = 'block';
+        if (controls) controls.style.display = 'flex';
+        initScene(p, () => selHex);
+      } else {
+        canvas.style.display = 'none';
+        if (controls) controls.style.display = 'none';
+
+        let existingImg = wrap.querySelector('.product-preview-img');
+        if (existingImg) existingImg.remove();
+
+        const img = document.createElement('img');
+        img.className = 'product-preview-img';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        img.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        img.src = p.thumbnail;
+
+        wrap.style.cursor = 'zoom-in';
+        wrap.addEventListener('mouseenter', () => { img.style.transform = 'scale(1.08)'; });
+        wrap.addEventListener('mouseleave', () => { img.style.transform = 'scale(1)'; });
+
+        wrap.appendChild(img);
+      }
     }
 
     // ── 3D Scene ─────────────────────────────────────────
@@ -693,75 +762,114 @@
       const canvas = document.getElementById('product-canvas');
       const wrap   = document.getElementById('product-canvas-wrap');
 
-      const scene    = new THREE.Scene();
-      scene.background = new THREE.Color(0x060A14);
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0a0a0a);
 
       const camera = new THREE.PerspectiveCamera(42, 1, 0.01, 200);
-      camera.position.set(0, 1, 6);
+      camera.position.set(0, 1.5, 6);
+      camera.lookAt(0, 0, 0);
 
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-      renderer.shadowMap.enabled = true;
+      // renderer.setSize'i updateStyle=false ile çağırıyoruz —
+      // CSS width/height'ı biz kontrol ediyoruz
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      // Three.js r155+ için linear color output
+      renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
 
+      // Canvas CSS'i Three.js'in üzerine yazmasını engellemek için
+      // setSize'ı false parametresiyle çağırıyoruz (updateStyle=false)
       function resize() {
-        const w = wrap.clientWidth || 600;
-        const h = wrap.clientHeight || 600;
-        renderer.setSize(w, h);
+        const w = wrap.offsetWidth;
+        const h = wrap.offsetHeight;
+        if (!w || !h) return; // layout hazır değil, atla
+        renderer.setSize(w, h, false); // false = CSS style'ı değiştirme
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
       }
-      new ResizeObserver(resize).observe(wrap);
-      resize(); setTimeout(resize, 100);
+
+      // Layout display:none'dan grid'e geçiş için RAF ile bekle
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resize();
+          new ResizeObserver(resize).observe(wrap);
+        });
+      });
 
       const controls = new OrbitControls(camera, canvas);
       controls.enableDamping = true;
       controls.dampingFactor = 0.07;
       controls.autoRotate = true;
-      controls.autoRotateSpeed = 1.5;
+      controls.autoRotateSpeed = 1.2;
+      controls.target.set(0, 0, 0);
+      controls.update();
 
-      // Lights
-      scene.add(new THREE.AmbientLight(0x0D1633, 3.0));
-      const keyLight = new THREE.DirectionalLight(0xFFFFFF, 3.5);
-      keyLight.position.set(5, 8, 6); keyLight.castShadow = true;
+      // ── Soft Studio Işıklandırma (Three.js r168 uyumlu) ──
+      // Güçlü ambient — modelin her yüzeyi görünsün
+      scene.add(new THREE.AmbientLight(0xffffff, 1.8));
+
+      // Ana key ışık — sol üstten, sıcak beyaz
+      const keyLight = new THREE.DirectionalLight(0xfff8f0, 3.5);
+      keyLight.position.set(4, 8, 6);
       scene.add(keyLight);
-      const fillLight = new THREE.DirectionalLight(0x7B2FFF, 2.0);
-      fillLight.position.set(-5, -3, -4);
+
+      // Dolgu ışık — sağdan hafif
+      const fillLight = new THREE.DirectionalLight(0xf0f5ff, 1.5);
+      fillLight.position.set(-5, 2, 3);
       scene.add(fillLight);
-      const rimLight = new THREE.PointLight(0x00E5FF, 1.8, 80);
-      rimLight.position.set(0, 10, -8);
+
+      // Arka rim ışık — kenar belirteci
+      const rimLight = new THREE.DirectionalLight(0xddeeff, 2.0);
+      rimLight.position.set(0, 3, -6);
       scene.add(rimLight);
 
-      // Grid
-      const grid = new THREE.GridHelper(20, 30, 0x1a2a6e, 0x0d1429);
-      grid.position.y = -1.8;
-      scene.add(grid);
+      // Alt kaldırma — gölge sertliğini azaltır
+      const bottomLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      bottomLight.position.set(0, -5, 1);
+      scene.add(bottomLight);
 
-      // Build model with flat color material
+      // ── Zemin ──
+      const floorY = -2.0;
+
+      // Yansımalı parlak zemin
+      const floorGeo = new THREE.PlaneGeometry(16, 16);
+      const floorMat = new THREE.MeshPhongMaterial({
+        color: 0x050505,
+        shininess: 200,
+        specular: 0x333333,
+        transparent: true,
+        opacity: 0.9,
+      });
+      const floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = floorY;
+      scene.add(floor);
+
+      // Altında parlayan halka
+      const glowGeo = new THREE.CircleGeometry(1.6, 64);
+      const glowMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.06,
+      });
+      const glow = new THREE.Mesh(glowGeo, glowMat);
+      glow.rotation.x = -Math.PI / 2;
+      glow.position.y = floorY + 0.01;
+      scene.add(glow);
+
+      // ── Model ──
       const group = new THREE.Group();
       const col = new THREE.Color(p.colors[0].hex);
-      
-      const builders = {
-        'custom-upload': buildCustomUpload,
-        'drone-frame': buildDroneFrame,
-        'gear-set': buildGearSet,
-        'phone-stand': buildPhoneStand,
-        'cable-organizer': buildCableOrganizer,
-        'mini-house': buildMiniHouse,
-        'robot-joint': buildRobotJoint,
-        'headphone-stand': buildHeadphoneStand,
-        'planter': buildPlanter,
-        'fidget-spinner': buildFidgetSpinner,
-        'gopro-mount': buildGoProMount,
-        'hex-storage': buildHexStorage
-      };
 
-      const buildFn = builders[p.id] || buildCustomUpload;
-      buildFn(group, col);
+      try {
+        const buildFn = p.buildFn || buildCustomUpload;
+        buildFn(group, col);
+      } catch(e) {
+        console.error('[3D Viewer] Model inşa hatası:', e);
+      }
       scene.add(group);
-
       sceneRef = { group, col };
 
-      // Controls
+      // ── Kontroller ──
       document.getElementById('ctrl-rotate').addEventListener('click', function() {
         controls.autoRotate = !controls.autoRotate;
         this.classList.toggle('active', controls.autoRotate);
@@ -769,7 +877,8 @@
       });
       document.getElementById('ctrl-reset').addEventListener('click', () => {
         controls.reset();
-        camera.position.set(0, 1, 6);
+        camera.position.set(0, 1.5, 6);
+        camera.lookAt(0, 0, 0);
       });
 
       let t = 0;
@@ -777,10 +886,11 @@
         requestAnimationFrame(animate);
         t += 0.01;
         controls.update();
-        keyLight.intensity = 3.2 + Math.sin(t * 1.6) * 0.4;
+        glowMat.opacity = 0.05 + Math.sin(t * 0.7) * 0.025;
         renderer.render(scene, camera);
       }
       animate();
+
     }
 
     function updateModelColor(hex) {

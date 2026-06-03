@@ -3,7 +3,6 @@
  * Soru sormaz · Doğrudan tasarılar · 3D önizleme günceller
  */
 
-import * as THREE from 'three';
 import { MATERIALS_DB } from './shop.js';
 import { askQwen } from './qwen.js';
 import { observeNewReveals } from './animations.js';
@@ -212,7 +211,6 @@ const FALLBACK_REPLY = (input) =>
 // ══════════════════════════════════════════════════════
 export function initAI() {
   renderAISection();
-  initAI3DViewer();
   bindAIEvents();
 
   // Register dynamically added .reveal elements
@@ -315,18 +313,13 @@ function renderAISection() {
           </div>
         </div>
 
-        <!-- Right: 3D Preview + Info -->
+        <!-- Right: Model Specs & Options -->
         <div class="ai-preview-panel">
           <div class="ai-preview-header">
             <div class="ai-preview-live">
-              <span class="viewer-live-dot"></span> CANLI 3D ÖNİZLEME
+              <span class="viewer-live-dot"></span> TEKNİK ÖNİZLEME RAPORU
             </div>
             <div class="ai-model-label" id="ai-model-label">Dalga Vazo</div>
-          </div>
-
-          <!-- 3D Canvas -->
-          <div class="ai-canvas-wrap">
-            <canvas id="ai-canvas" class="ai-canvas"></canvas>
           </div>
 
           <!-- Specs panel -->
@@ -350,6 +343,20 @@ function renderAISection() {
               <span class="ai-spec-icon">💰</span>
               <span class="ai-spec-label">Fiyat</span>
               <span class="ai-spec-val" id="ai-spec-price">₺124</span>
+            </div>
+            <div class="ai-spec-divider" style="height: 1px; background: rgba(255,255,255,0.06); margin: 8px 0;"></div>
+            <div class="ai-spec-row">
+              <span class="ai-spec-icon">🛡️</span>
+              <span class="ai-spec-label">Yapısal Güç</span>
+              <div class="viewer-bar-track" style="flex: 1; height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; margin: 0 10px;">
+                <div class="viewer-bar-fill" style="width: 85%; height: 100%; background: linear-gradient(90deg, #34D399, #10B981); border-radius: 3px;"></div>
+              </div>
+              <span class="ai-spec-val" style="color: #34D399;">85%</span>
+            </div>
+            <div class="ai-spec-row">
+              <span class="ai-spec-icon">🧠</span>
+              <span class="ai-spec-label">AI Üretilebilirlik</span>
+              <span class="ai-spec-val" style="color: #38BDF8; font-weight: 700;">Optimal (9.6)</span>
             </div>
           </div>
 
@@ -375,276 +382,11 @@ function renderAISection() {
 }
 
 // ══════════════════════════════════════════════════════
-// 3D VIEWER (AI Panel)
-// ══════════════════════════════════════════════════════
-function initAI3DViewer() {
-  const canvas = document.getElementById('ai-canvas');
-  if (!canvas) return;
-
-  aiState.scene    = new THREE.Scene();
-  aiState.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  aiState.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  aiState.renderer.setClearColor(0x000000, 0);
-  aiState.clock    = new THREE.Clock();
-
-  aiState.camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-  aiState.camera.position.set(0, 0.5, 5.5);
-
-  function resize() {
-    const w = canvas.offsetWidth  || 360;
-    const h = canvas.offsetHeight || 320;
-    aiState.renderer.setSize(w, h);
-    aiState.camera.aspect = w / h;
-    aiState.camera.updateProjectionMatrix();
-  }
-  resize();
-  new ResizeObserver(resize).observe(canvas.parentElement);
-
-  // Lighting
-  aiState.scene.add(new THREE.AmbientLight(0x060f1c, 1.4));
-  aiState.keyLight = new THREE.PointLight(0xffffff, 4.2, 25);
-  aiState.keyLight.position.set(3, 5, 4);
-  aiState.scene.add(aiState.keyLight);
-
-  const fill = new THREE.PointLight(0x7B2FFF, 2.0, 20);
-  fill.position.set(-4, -2, 2);
-  aiState.scene.add(fill);
-
-  const rim = new THREE.DirectionalLight(0xffffff, 0.5);
-  rim.position.set(0, 8, -6);
-  aiState.scene.add(rim);
-
-  // Grid
-  const gm = new THREE.MeshBasicMaterial({ color: '#34D399', wireframe: true, transparent: true, opacity: 0.04 });
-  const grid = new THREE.Mesh(new THREE.PlaneGeometry(8, 8, 14, 14), gm);
-  grid.rotation.x = -Math.PI/2;
-  grid.position.y = -2.0;
-  aiState.scene.add(grid);
-
-  // Build initial model (wave vase)
-  buildAIVase();
-
-  // Drag
-  let drag = false, px = 0, py = 0, vx = 0, vy = 0;
-  canvas.addEventListener('mousedown', e => { drag = true; px = e.clientX; py = e.clientY; canvas.style.cursor = 'grabbing'; });
-  window.addEventListener('mouseup', () => { drag = false; canvas.style.cursor = 'grab'; });
-  window.addEventListener('mousemove', e => {
-    if (!drag) return;
-    vy = (e.clientX - px) * 0.009; vx = (e.clientY - py) * 0.009;
-    px = e.clientX; py = e.clientY;
-  });
-  canvas.style.cursor = 'grab';
-
-  // Observe
-  new IntersectionObserver(entries => {
-    aiState.active = entries[0].isIntersecting;
-    if (aiState.active && !aiState.rafId) aiLoop();
-  }, { threshold: 0.1 }).observe(canvas);
-
-  function aiLoop() {
-    if (!aiState.active) { aiState.rafId = null; return; }
-    aiState.rafId = requestAnimationFrame(aiLoop);
-    const t = aiState.clock.getElapsedTime();
-    if (!drag) {
-      aiState.group.rotation.y += 0.010;
-      aiState.group.rotation.x = Math.sin(t * 0.38) * 0.08;
-    } else {
-      aiState.group.rotation.y += vy;
-      aiState.group.rotation.x += vx;
-    }
-    vx *= 0.87; vy *= 0.87;
-    aiState.keyLight.intensity = 4.0 + Math.sin(t * 1.9) * 0.6;
-    aiState.renderer.render(aiState.scene, aiState.camera);
-  }
-}
-
-// ── Build AI Vase ──────────────────────────────────────
-function buildAIVase(style = 'wave') {
-  if (aiState.group) {
-    aiState.scene.remove(aiState.group);
-    aiState.group.traverse(c => { if (c.isMesh) { c.geometry.dispose(); c.material.dispose(); } });
-  }
-
-  const col   = new THREE.Color(aiState.vaseColor);
-  aiState.group = new THREE.Group();
-
-  const points = [];
-  for (let i = 0; i <= 64; i++) {
-    const t = i / 64;
-    const y = t * 3.8 - 1.9;
-    const b = Math.sin(t * Math.PI);
-
-    let r;
-    switch (style) {
-      case 'straight':
-        r = 0.55 + (t < 0.05 || t > 0.97 ? 0.05 : 0);
-        break;
-      case 'spiral':
-        r = 0.15 + b * 0.60 + Math.sin(t * Math.PI * 4) * 0.10 * b;
-        break;
-      case 'tapered':
-        r = 0.65 - t * 0.35;
-        break;
-      case 'bulge':
-        r = 0.12 + Math.pow(Math.sin(t * Math.PI), 1.4) * 0.80;
-        break;
-      default: // wave
-        r = 0.10 + b * 0.68 + Math.sin(t * Math.PI * 7) * 0.08 * b;
-    }
-    points.push(new THREE.Vector2(Math.max(0.06, r), y));
-  }
-
-  const geo = new THREE.LatheGeometry(points, 52);
-  const mat = new THREE.MeshPhongMaterial({
-    color: col,
-    specular: 0x333333,
-    shininess: 80,
-    side: THREE.DoubleSide,
-  });
-
-  aiState.group.add(new THREE.Mesh(geo, mat));
-
-  // Foot ring
-  const foot = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.028, 8, 32),
-    new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 }));
-  foot.position.y = -1.88;
-  foot.rotation.x = Math.PI/2;
-  aiState.group.add(foot);
-
-  // Rim ring
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.09, 0.032, 8, 32),
-    new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 }));
-  rim.position.y = 1.88;
-  rim.rotation.x = Math.PI/2;
-  aiState.group.add(rim);
-
-  aiState.group.scale.setScalar(0.92);
-  aiState.scene.add(aiState.group);
-}
-
-// ── Build AI Drone ─────────────────────────────────────
-function buildAIDrone() {
-  if (aiState.group) {
-    aiState.scene.remove(aiState.group);
-    aiState.group.traverse(c => { if (c.isMesh) { c.geometry.dispose(); c.material.dispose(); } });
-  }
-
-  const col = new THREE.Color(aiState.vaseColor);
-  aiState.group = new THREE.Group();
-
-  const pm = new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 });
-  const am = new THREE.MeshPhongMaterial({ color: 0x00E5FF, emissive: 0x004455, specular: 0xffffff, shininess: 150 });
-
-  const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.60, 0.60, 0.16, 8), pm);
-  aiState.group.add(plate);
-
-  [0, Math.PI/2].forEach(a => {
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.13, 0.18), pm);
-    arm.rotation.y = a;
-    aiState.group.add(arm);
-  });
-
-  [[1.1,1.1],[-1.1,1.1],[1.1,-1.1],[-1.1,-1.1]].forEach(([x,z]) => {
-    const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.20, 0.26, 16), pm);
-    pod.position.set(x, 0.08, z);
-    aiState.group.add(pod);
-    const prop = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.024, 6, 32), am);
-    prop.position.set(x, 0.22, z); prop.rotation.x = Math.PI/2;
-    aiState.group.add(prop);
-  });
-
-  const cam = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.28, 0.26), pm);
-  cam.position.set(0, 0.04, -0.58);
-  aiState.group.add(cam);
-
-  aiState.group.scale.setScalar(0.80);
-  aiState.scene.add(aiState.group);
-}
-
-// ── Build AI Gear ──────────────────────────────────────
-function buildAIGear() {
-  if (aiState.group) {
-    aiState.scene.remove(aiState.group);
-    aiState.group.traverse(c => { if (c.isMesh) { c.geometry.dispose(); c.material.dispose(); } });
-  }
-  const col = new THREE.Color(aiState.vaseColor);
-  aiState.group = new THREE.Group();
-
-  const pm = new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 60 });
-  const am = new THREE.MeshPhongMaterial({ color: 0x00E5FF, emissive: 0x004455, specular: 0xffffff, shininess: 150 });
-
-  function gearMesh(teeth, r, thick) {
-    const shape = new THREE.Shape();
-    const th = r * 0.22;
-    for (let i = 0; i < teeth; i++) {
-      const a0 = (i/teeth)*Math.PI*2;
-      const a1 = ((i+0.3)/teeth)*Math.PI*2;
-      const a2 = ((i+0.7)/teeth)*Math.PI*2;
-      const a3 = ((i+1)/teeth)*Math.PI*2;
-      if (i===0) shape.moveTo(Math.cos(a0)*r, Math.sin(a0)*r);
-      else shape.lineTo(Math.cos(a0)*r, Math.sin(a0)*r);
-      shape.lineTo(Math.cos(a1)*(r+th), Math.sin(a1)*(r+th));
-      shape.lineTo(Math.cos(a2)*(r+th), Math.sin(a2)*(r+th));
-      shape.lineTo(Math.cos(a3)*r, Math.sin(a3)*r);
-    }
-    shape.closePath();
-    const hole = new THREE.Path(); hole.absarc(0,0,r*0.3,0,Math.PI*2,true); shape.holes.push(hole);
-    return new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: thick, bevelEnabled: false }), pm);
-  }
-
-  const g1 = gearMesh(20, 0.95, 0.28); g1.position.set(-0.5, 0, 0); g1.rotation.x = -Math.PI/2;
-  const g2 = gearMesh(12, 0.58, 0.28); g2.position.set(0.92, 0, 0); g2.rotation.x = -Math.PI/2;
-  [g1, g2].forEach(g => aiState.group.add(g));
-
-  const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.60, 12), pm);
-  axle.position.set(-0.5, 0.24, 0);
-  aiState.group.add(axle);
-
-  aiState.group.scale.setScalar(0.95);
-  aiState.group.position.set(0, -0.35, 0);
-  aiState.scene.add(aiState.group);
-}
-
-// ── Build AI Phone Stand ───────────────────────────────
-function buildAIPhone() {
-  if (aiState.group) {
-    aiState.scene.remove(aiState.group);
-    aiState.group.traverse(c => { if (c.isMesh) { c.geometry.dispose(); c.material.dispose(); } });
-  }
-  const col = new THREE.Color(aiState.vaseColor);
-  aiState.group = new THREE.Group();
-
-  const pm = new THREE.MeshPhongMaterial({ color: col, specular: 0x333333, shininess: 80 });
-  const am = new THREE.MeshPhongMaterial({ color: 0x00E5FF, emissive: 0x004455, specular: 0xffffff, shininess: 150 });
-
-  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.85, 0.14, 32), pm);
-  base.position.y = -1.1;
-  aiState.group.add(base);
-
-  const back = new THREE.Mesh(new THREE.BoxGeometry(1.55, 1.95, 0.13), pm);
-  back.position.set(0, 0, -0.42); back.rotation.x = -0.35;
-  aiState.group.add(back);
-
-  const lip = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.19, 0.22), pm);
-  lip.position.set(0, -0.93, 0.12);
-  aiState.group.add(lip);
-
-  const strip = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.04, 0.04), am);
-  strip.position.set(0, 0.95, -0.36);
-  aiState.group.add(strip);
-
-  aiState.group.scale.setScalar(0.72);
-  aiState.group.position.y = 0.12;
-  aiState.scene.add(aiState.group);
-}
-
-// ══════════════════════════════════════════════════════
 // MODEL SWITCHERS
 // ══════════════════════════════════════════════════════
 function switchVaseStyle(style) {
   aiState.currentModel = 'vase';
   aiState.vaseStyle = style;
-  buildAIVase(style);
 
   const labels = { wave:'Dalga Vazo', straight:'Düz Silindirik Vazo', spiral:'Spiral Vazo', tapered:'Konik Vazo', bulge:'Şişkin Vazo' };
   const sizes  = { wave:'80×80×180mm', straight:'80×80×180mm', spiral:'80×80×200mm', tapered:'90×45×180mm', bulge:'90×90×170mm' };
@@ -662,11 +404,6 @@ function switchAIModel(model) {
   const times  = { drone: '~12 saat', gear: '~8 saat', phone: '~3 saat' };
   const prices = { drone: '₺280–₺672', gear: '₺165–₺396', phone: '₺75–₺180' };
 
-  if (model === 'drone') buildAIDrone();
-  else if (model === 'gear') buildAIGear();
-  else if (model === 'phone') buildAIPhone();
-  else buildAIVase();
-
   document.getElementById('ai-model-label').textContent = labels[model] || model;
   document.getElementById('ai-spec-size').textContent   = sizes[model]  || '—';
   document.getElementById('ai-spec-time').textContent   = times[model]  || '—';
@@ -674,17 +411,11 @@ function switchAIModel(model) {
 }
 
 function scaleAIModel(factor) {
-  if (aiState.group) {
-    aiState.group.scale.multiplyScalar(factor);
-  }
+  // 3D rendering disabled, scale changes are visual only
 }
 
 function tintAIModel(hex) {
   aiState.vaseColor = hex;
-  if (aiState.currentModel === 'vase') buildAIVase(aiState.vaseStyle);
-  else if (aiState.currentModel === 'drone') buildAIDrone();
-  else if (aiState.currentModel === 'gear') buildAIGear();
-  else if (aiState.currentModel === 'phone') buildAIPhone();
 }
 
 // ══════════════════════════════════════════════════════

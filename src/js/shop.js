@@ -4,6 +4,7 @@
  */
 
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { observeNewReveals } from './animations.js';
 
@@ -30,165 +31,1808 @@ export const QUALITIES_DB = [
 // ══════════════════════════════════════════════════════
 // PRODUCTS
 // ══════════════════════════════════════════════════════
-const PRODUCTS = [
+export const PRODUCTS = [
   {
-    id: 'custom-upload', name: 'Kendi Modeliniz', subtitle: 'STL / OBJ Dosyası Yükle',
-    price: 50, category: 'ozel', rating: 5.0, reviews: 0, dims: 'Belirsiz',
-    accentColor: '#F43F5E', badge: 'Özel', badgeColor: '#F43F5E',
-    availableMaterials: ['pla','petg','abs','cf','resin'], defaultMaterial: 'pla', defaultQuality: 'standard',
-    colors: [
-      { name: 'Kırmızı', hex: '#EF4444' }, { name: 'Mavi', hex: '#3B82F6' },
-      { name: 'Siyah', hex: '#111827' }, { name: 'Beyaz', hex: '#F9FAFB' }
+    "id": "custom-upload",
+    "name": "Kendi Modeliniz",
+    "subtitle": "STL / OBJ Dosyası Yükle",
+    "description": "Kendi tasarladığınız veya internetten indirdiğiniz STL/OBJ formatındaki 3D dosyalarınızı yükleyin, anında fiyat alın ve sipariş verin.",
+    "price": 50,
+    "category": "ozel",
+    "rating": 5.0,
+    "reviews": 0,
+    "dims": "Belirsiz",
+    "accentColor": "#F43F5E",
+    "badge": "Özel",
+    "badgeColor": "#F43F5E",
+    "printablesUrl": null,
+    "designer": "Siz",
+    "thumbnail": "https://images.unsplash.com/photo-1581092335397-9583fe92d232?q=80&w=640&auto=format&fit=crop",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "cf",
+      "resin"
     ],
-    buildFn: buildCustomUpload,
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      }
+    ],
+    buildFn: buildCustomUpload
   },
   {
-    id: 'drone-frame', name: 'Drone Gövdesi', subtitle: 'FPV Racing Frame v2.1',
-    price: 280, category: 'mekanik', rating: 4.9, reviews: 128, dims: '124 × 90 × 45 mm',
-    accentColor: '#EDEDED', badge: 'Çok Satan', badgeColor: '#EDEDED',
-    availableMaterials: ['pla','petg','abs','cf'], defaultMaterial: 'cf', defaultQuality: 'fine',
-    colors: [
-      { name: 'Siyan', hex: '#EDEDED' }, { name: 'Kırmızı', hex: '#EF4444' },
-      { name: 'Sarı',  hex: '#EAB308' }, { name: 'Gümüş',   hex: '#9CA3AF' },
-      { name: 'Siyah', hex: '#1a1a2e' }, { name: 'Mor',     hex: '#A1A1AA' },
+    "id": "printables-1725199",
+    "name": "Palet Bardak Altlığı",
+    "subtitle": "Retro Mini Palet Tasarımı · Ahşap Hissiyatlı · Şık Dekor",
+    "description": "Masanıza endüstriyel ve eğlenceli bir hava katacak mini palet şeklinde bardak altlığı. Özellikle ahşap veya PLA+ filamentler ile harika sonuçlar verir. Dayanıklı yapısıyla sıcak ve soğuk içecekler için uygundur.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1725199-pallet-coaster",
+    "thumbnail": "https://media.printables.com/media/prints/8d025699-98a6-4a0c-b6ec-968d6e0d8792/images/12941053_1ea26549-c5cd-4e64-9225-90da382f5c08_fb5681a4-c928-408a-92f4-31cd18d82f42/thumbs/inside/640x480/jpg/20260515_081726817_ios.webp",
+    "price": 72,
+    "category": "dekor",
+    "rating": 4.8,
+    "reviews": 412,
+    "dims": "97 × 97 × 12 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
     ],
-    buildFn: buildDroneFrame,
-  },
-
-  {
-    id: 'gear-set', name: 'Dişli Mekanizma', subtitle: '3-Kademeli Güç Aktarımı',
-    price: 165, category: 'mekanik', rating: 4.8, reviews: 93, dims: '120 × 100 × 28 mm',
-    accentColor: '#FBBF24', badge: 'Pro', badgeColor: '#FBBF24',
-    availableMaterials: ['pla','petg','abs','cf'], defaultMaterial: 'petg', defaultQuality: 'fine',
-    colors: [
-      { name: 'Altın',   hex: '#FBBF24' }, { name: 'Bakır',  hex: '#B45309' },
-      { name: 'Gümüş',  hex: '#9CA3AF' }, { name: 'Siyah',  hex: '#1a1a1a' },
-      { name: 'Kırmızı',hex: '#DC2626' }, { name: 'Zeytin', hex: '#65A30D' },
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
     ],
-    buildFn: buildGearSet,
-  },
-  {
-    id: 'phone-stand', name: 'Telefon / Tablet Standı', subtitle: 'Çok Açılı Ergonomik',
-    price: 75, category: 'aksesuar', rating: 4.6, reviews: 210, dims: '90 × 70 × 110 mm',
-    accentColor: '#A1A1AA', badge: 'Popüler', badgeColor: '#A1A1AA',
-    availableMaterials: ['pla','petg','tpu','abs'], defaultMaterial: 'pla', defaultQuality: 'standard',
-    colors: [
-      { name: 'Mor',    hex: '#A1A1AA' }, { name: 'Siyah', hex: '#111827' },
-      { name: 'Beyaz',  hex: '#F9FAFB' }, { name: 'Mavi',  hex: '#3B82F6' },
-      { name: 'Pembe',  hex: '#EC4899' }, { name: 'Yeşil', hex: '#22C55E' },
-    ],
-    buildFn: buildPhoneStand,
-  },
-  {
-    id: 'cable-organizer', name: 'Kablo Yönetim Rayı', subtitle: '8-Kanal Masaüstü Sistemi',
-    price: 45, category: 'aksesuar', rating: 4.5, reviews: 183, dims: '200 × 30 × 22 mm',
-    accentColor: '#F472B6', badge: 'Ekonomik', badgeColor: '#EC4899',
-    availableMaterials: ['pla','petg','tpu'], defaultMaterial: 'tpu', defaultQuality: 'standard',
-    colors: [
-      { name: 'Pembe',   hex: '#F472B6' }, { name: 'Siyah',   hex: '#1F2937' },
-      { name: 'Beyaz',   hex: '#F9FAFB' }, { name: 'Gri',     hex: '#6B7280' },
-      { name: 'Turuncu', hex: '#F97316' }, { name: 'Mavi',    hex: '#3B82F6' },
-    ],
-    buildFn: buildCableOrganizer,
-  },
-  {
-    id: 'mini-house', name: 'Mimari Maket Ev', subtitle: 'Detaylı Çok Katmanlı',
-    price: 320, category: 'dekor', rating: 4.9, reviews: 47, dims: '100 × 90 × 120 mm',
-    accentColor: '#FB923C', badge: 'Özel', badgeColor: '#F97316',
-    availableMaterials: ['pla','resin'], defaultMaterial: 'resin', defaultQuality: 'ultra',
-    colors: [
-      { name: 'Turuncu',  hex: '#FB923C' }, { name: 'Bej',   hex: '#D4B896' },
-      { name: 'Beyaz',   hex: '#F9FAFB' }, { name: 'Gri',   hex: '#6B7280' },
-      { name: 'Terracota',hex: '#B45309' }, { name: 'Gece', hex: '#1e293b' },
-    ],
-    buildFn: buildMiniHouse,
+    buildFn: buildPlanter
   },
   {
-    id: 'robot-joint', name: 'Robot Eklem Parçası', subtitle: 'Servo Uyumlu Döner Mafsal',
-    price: 195, category: 'mekanik', rating: 4.8, reviews: 56, dims: '55 × 55 × 80 mm',
-    accentColor: '#10B981', badge: 'Teknik', badgeColor: '#10B981',
-    availableMaterials: ['petg','abs','cf'], defaultMaterial: 'abs', defaultQuality: 'fine',
-    colors: [
-      { name: 'Yeşil', hex: '#10B981' }, { name: 'Siyah', hex: '#111827' },
-      { name: 'Gri',   hex: '#6B7280' }, { name: 'Mavi',  hex: '#3B82F6' },
-      { name: 'Sarı',  hex: '#EAB308' }, { name: 'Mor',   hex: '#8B5CF6' },
+    "id": "printables-1725226",
+    "name": "Silikon & Derz Nozül Uçları",
+    "subtitle": "Hassas Silikon Uygulamaları İçin Nozül Seti · Pratik Derz Çekme",
+    "description": "Evdeki tamirat ve derz dolgu işlerinizde profesyonel sonuçlar elde etmenizi sağlayan farklı açılarda nozül seti. Silikon kartuşlarının ucuna takılarak pürüzsüz ve temiz bitişler sağlar.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1725226-silicone-caulk-cartridge-finishing-nozzle-tips",
+    "thumbnail": "https://media.printables.com/media/prints/926475a7-42ff-4de0-99ab-da5ec29f706a/images/12941289_84d4c359-2018-40e6-9543-6b70ec1730cb_8a24e5dc-2768-4beb-adf0-09dd2aa79f5f/thumbs/inside/640x480/jpg/20260515_085626766_ios.webp",
+    "price": 110,
+    "category": "dekor",
+    "rating": 5.0,
+    "reviews": 420,
+    "dims": "75 × 75 × 90 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
     ],
-    buildFn: buildRobotJoint,
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
   },
   {
-    id: 'headphone-stand', name: 'Kulaklık Standı', subtitle: 'Minimalist Arc Tasarımı',
-    price: 120, category: 'aksesuar', rating: 4.7, reviews: 88, dims: '120 × 80 × 200 mm',
-    accentColor: '#8B5CF6', badge: 'Şık', badgeColor: '#8B5CF6',
-    availableMaterials: ['pla','petg','abs'], defaultMaterial: 'pla', defaultQuality: 'standard',
-    colors: [
-      { name: 'Mor',    hex: '#8B5CF6' }, { name: 'Siyah', hex: '#111827' },
-      { name: 'Beyaz',  hex: '#F9FAFB' }, { name: 'Gri',   hex: '#4B5563' },
-      { name: 'Altın',  hex: '#D97706' }, { name: 'Gök',   hex: '#0EA5E9' },
+    "id": "printables-1725214",
+    "name": "Matkap Tipi Boya Karıştırıcı",
+    "subtitle": "Boya ve Sıvı Karışımlar İçin Pratik Matkap Aparatı · Yüksek Verim",
+    "description": "Boya, alçı ve diğer sıvı karışımları matkabınız yardımıyla hızlıca homojen hale getirmek için tasarlanmış mekanik mikser aparatı. Temizlemesi kolaydır ve petg/abs gibi dayanıklı malzemelerle üretilir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1725214-drill-paint-mixer",
+    "thumbnail": "https://media.printables.com/media/prints/3919aa40-90e7-44c3-8aaa-6c6698535da8/images/12941201_5eaf5771-4f2a-4951-8ba7-9696d6f46be8_837e28f0-138b-41e4-8744-c999ba4ce002/thumbs/inside/640x480/jpg/20260515_084230325_ios.webp",
+    "price": 167,
+    "category": "mekanik",
+    "rating": 4.7,
+    "reviews": 147,
+    "dims": "72 × 72 × 87 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
     ],
-    buildFn: buildHeadphoneStand,
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
   },
   {
-    id: 'planter', name: 'Geometrik Saksı', subtitle: 'Altıgen Bitki Evi',
-    price: 85, category: 'dekor', rating: 4.6, reviews: 72, dims: '100 × 100 × 120 mm',
-    accentColor: '#22C55E', badge: 'Doğal', badgeColor: '#16A34A',
-    availableMaterials: ['pla','petg','resin'], defaultMaterial: 'petg', defaultQuality: 'standard',
-    colors: [
-      { name: 'Yeşil',  hex: '#22C55E' }, { name: 'Toprak', hex: '#92400E' },
-      { name: 'Krem',   hex: '#FEF3C7' }, { name: 'Gri',    hex: '#6B7280' },
-      { name: 'Beyaz',  hex: '#F9FAFB' }, { name: 'Lacivert',hex: '#1E3A8A' },
+    "id": "printables-1731885",
+    "name": "Rulo Mekanizmalı Saklama Kutusu",
+    "subtitle": "Katlanabilir Modüler Düzenleyici Kutu · Alan Tasarrufu",
+    "description": "İçine koyacağınız malzemeye göre rulo gibi kıvrılabilen, kapak mekanizmalı yaratıcı saklama kutusu. Masaüstü kırtasiye veya hırdavat malzemelerinizi düzenlemek için son derece pratiktir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1731885-roll-up-storage-box-organizer",
+    "thumbnail": "https://media.printables.com/media/prints/f547e10c-b3a0-4996-b1a3-e2b17604fddd/images/12987081_35b0e024-fbd0-4b7c-bff4-d5cc892a619e_e80f5fae-73f4-4e09-8ce6-e637f0fe9c21/thumbs/inside/640x480/png/2.webp",
+    "price": 197,
+    "category": "aksesuar",
+    "rating": 4.7,
+    "reviews": 187,
+    "dims": "162 × 162 × 77 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
     ],
-    buildFn: buildPlanter,
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
   },
   {
-    id: 'fidget-spinner', name: 'Fidget Spinner Pro', subtitle: 'Precision Bearing Destekli',
-    price: 55, category: 'aksesuar', rating: 4.4, reviews: 231, dims: '75 × 75 × 15 mm',
-    accentColor: '#06B6D4', badge: 'Eğlenceli', badgeColor: '#0891B2',
-    availableMaterials: ['pla','petg','abs'], defaultMaterial: 'pla', defaultQuality: 'fine',
-    colors: [
-      { name: 'Cyan',    hex: '#06B6D4' }, { name: 'Kırmızı', hex: '#EF4444' },
-      { name: 'Mor',     hex: '#8B5CF6' }, { name: 'Siyah',   hex: '#111827' },
-      { name: 'Turuncu', hex: '#F59E0B' }, { name: 'Yeşil',   hex: '#22C55E' },
+    "id": "printables-1724779",
+    "name": "Heavy-Duty Gravity Phone Mount &amp; Articulated Arm",
+    "subtitle": "Printables Top Modeli · Yüksek Kaliteli 3D Baskı",
+    "description": "Heavy-Duty Gravity Phone Mount &amp; Articulated Arm modeli, 3D yazıcı topluluğu tarafından tasarlanmış yüksek puanlı popüler bir modeldir. PLA, PETG ve ABS filamentler ile basılmaya uygundur.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1724779-heavy-duty-gravity-phone-mount-articulated-arm",
+    "thumbnail": "https://media.printables.com/media/prints/853d3d83-2197-41ed-b3ac-555820ac02f6/images/12937822_31e1fb12-8e45-4207-a7ad-ba099414ef47_55cc3064-0518-4e58-ad1d-733c61fd9f57/thumbs/inside/640x480/png/phoneholderwitharmcover3.webp",
+    "price": 398,
+    "category": "dekor",
+    "rating": 5.0,
+    "reviews": 128,
+    "dims": "123 × 123 × 38 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
     ],
-    buildFn: buildFidgetSpinner,
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
   },
   {
-    id: 'gopro-mount', name: 'Aksiyon Kamera Montaj', subtitle: 'GoPro & DJI Uyumlu',
-    price: 140, category: 'aksesuar', rating: 4.7, reviews: 103, dims: '80 × 60 × 90 mm',
-    accentColor: '#3B82F6', badge: 'Uyumlu', badgeColor: '#2563EB',
-    availableMaterials: ['pla','petg','abs','cf'], defaultMaterial: 'abs', defaultQuality: 'fine',
-    colors: [
-      { name: 'Mavi',    hex: '#3B82F6' }, { name: 'Siyah',   hex: '#111827' },
-      { name: 'Turuncu', hex: '#F97316' }, { name: 'Beyaz',   hex: '#F9FAFB' },
-      { name: 'Karbon',  hex: '#374151' }, { name: 'Yeşil',   hex: '#16A34A' },
+    "id": "printables-1728813",
+    "name": "Evrensel Masaüstü Kablo Düzenleyici",
+    "subtitle": "Çok Kanallı Kablo Yönetim Sistemi · Düzenli Çalışma Alanları",
+    "description": "Şarj, veri ve güç kablolarınızın masanın arkasına düşmesini engelleyen şık masaüstü kablo tutucu. Arkasındaki çift taraflı bant yuvası ile masanıza kolayca sabitlenir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1728813-universal-desk-cable-holder",
+    "thumbnail": "https://media.printables.com/media/prints/02666f3a-00ea-4e2d-b4a4-4a1d008d91c0/images/12963895_99d371a8-1ad9-4f6e-ba0b-b25802719f5a_e5ed44d7-5ca1-4bba-911e-e9968af70219/thumbs/inside/640x480/jpg/v3360.webp",
+    "price": 356,
+    "category": "aksesuar",
+    "rating": 5.0,
+    "reviews": 206,
+    "dims": "81 × 81 × 96 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
     ],
-    buildFn: buildGoProMount,
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
   },
   {
-    id: 'hex-storage', name: 'Altıgen Saklama Kutusu', subtitle: 'Modüler Depolama Sistemi',
-    price: 70, category: 'aksesuar', rating: 4.5, reviews: 149, dims: '80 × 92 × 60 mm',
-    accentColor: '#A78BFA', badge: 'Modüler', badgeColor: '#7C3AED',
-    availableMaterials: ['pla','petg','abs'], defaultMaterial: 'pla', defaultQuality: 'standard',
-    colors: [
-      { name: 'Lavanta', hex: '#A78BFA' }, { name: 'Gece Mavisi', hex: '#1E3A8A' },
-      { name: 'Siyah',   hex: '#111827' }, { name: 'Kırmızı',    hex: '#EF4444' },
-      { name: 'Sarı',    hex: '#FCD34D' }, { name: 'Şeffaf',     hex: '#DBEAFE' },
+    "id": "printables-1723128",
+    "name": "Modüler Sarmaşık ve Bitki Destek Çubuğu",
+    "subtitle": "Eklenebilir Yapıda Çiçek ve Bitki Destek Direği · Kolay Kurulum",
+    "description": "Saksı bitkileriniz büyüdükçe birbirine ekleyerek uzatabileceğiniz modüler destek sistemi. İçerisine yosun veya toprak doldurulabilir haznesi sayesinde bitkilerinizin nemli kalmasına yardımcı olur.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1723128-modular-climbing-moss-pole-and-plant-support",
+    "thumbnail": "https://media.printables.com/media/prints/09747439-5adf-4b33-9cb9-d20c39527f64/images/12925823_19e5c4b9-ba23-4fd0-ad3f-592182df4791_8805c1bb-2143-438a-af4f-0c1dc1a7c185/thumbs/inside/640x480/jpg/horizontal.webp",
+    "price": 378,
+    "category": "aksesuar",
+    "rating": 4.8,
+    "reviews": 38,
+    "dims": "43 × 43 × 58 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
     ],
-    buildFn: buildHexStorage,
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
   },
+  {
+    "id": "printables-1720553",
+    "name": "Yivli Ayarlanabilir Mobilya Ayağı",
+    "subtitle": "43-71 mm Yükseklik Ayarlı Yivli Ayak · Dayanıklı Mekanizma",
+    "description": "Yamuk diş yivli mekanizması sayesinde yüksek ağırlıkları rahatça taşıyabilen, 43 ile 71 mm arasında yüksekliği ayarlanabilen pratik mobilya ayağı. Masa veya sehpa dengesizliklerini gidermek için idealdir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1720553-adjustable-furniture-leg-43-71-mm-with-trapezoidal",
+    "thumbnail": "https://media.printables.com/media/prints/4b33f528-ee34-4ace-8b54-9caa1271434e/images/12906935_74ea1f85-59e5-4bc6-ad8a-5c132f797a75_7b5a16a3-d393-4fe7-995e-d1b5d654f009/thumbs/inside/640x480/jpg/dsc00241.webp",
+    "price": 72,
+    "category": "mekanik",
+    "rating": 4.8,
+    "reviews": 62,
+    "dims": "67 × 67 × 32 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1711281",
+    "name": "Güçlendirilmiş Evrensel Askı",
+    "subtitle": "Yüksek Taşıma Kapasiteli Duvar Askısı · Kolay Montaj",
+    "description": "Özel iç yapısı sayesinde yüksek ağırlıkları (baskı kalitesine bağlı olarak 15 kg'a kadar) kırılmadan taşıyabilen çok amaçlı duvar askısı. Garaj, mutfak veya antre kullanımı için uygundur.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1711281-strong-universal-hook",
+    "thumbnail": "https://media.printables.com/media/prints/5eff61a1-383e-4e11-b5f3-3514eaed9fe0/images/12843507_ff0bdfc4-08ed-434b-87cf-ab0128d86b50_fff1cc96-aff0-4a8a-bb76-f123e28dbcb5/thumbs/inside/640x480/jpg/v35.webp",
+    "price": 243,
+    "category": "aksesuar",
+    "rating": 4.5,
+    "reviews": 463,
+    "dims": "178 × 178 × 43 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1715172",
+    "name": "Geliştirilmiş 608 Rulman",
+    "subtitle": "Sürtünmesiz Çalışan 3D Yazıcı Rulmanı · Yağlama Gerektirmez",
+    "description": "Fidget spinnerlar veya mekanik projeleriniz için bilyeleriyle birlikte tamamen 3D yazıcıda basılabilen geliştirilmiş 608 standart rulman tasarımı. PLA+ filament ile mükemmel akıcılıkta çalışır.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1715172-a-better-608-bearing",
+    "thumbnail": "https://media.printables.com/media/prints/d9709c11-48be-44be-94d3-de1ecbbd8dbc/images/12885484_901ea8e4-6203-4413-aee9-91068058ad69_0ebde046-3f20-4cda-95bc-6223cc7d387b/thumbs/inside/640x480/jpg/screenshot-2026-05-10-210915.webp",
+    "price": 112,
+    "category": "mekanik",
+    "rating": 4.6,
+    "reviews": 212,
+    "dims": "107 × 107 × 72 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1734124",
+    "name": "Çok Renkli Sevimli Bukalemun",
+    "subtitle": "Eklemli Hareketli Bukalemun Figürü · Eğlenceli Oyuncak",
+    "description": "Tek parça halinde basılan (Print-in-Place) ve basıldıktan sonra tüm eklemleri hareket edebilen sevimli bukalemun figürü. Çok renkli (multi-color) veya geçişli filamentlerle göz alıcı görünür.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1734124-colormix-chameleon",
+    "thumbnail": "https://media.printables.com/media/prints/52148676-9ef2-4f25-8946-5de83f2d7f72/images/13000789_2e4eac6c-9946-4530-8a31-14cdb7359eba_213a2fea-0f29-489a-81f6-6de476613919/thumbs/inside/640x480/jpg/chameleon_2.webp",
+    "price": 138,
+    "category": "oyuncak",
+    "rating": 4.8,
+    "reviews": 88,
+    "dims": "133 × 133 × 98 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1735583",
+    "name": "Ergonomik Masaüstü Monitör Standı",
+    "subtitle": "Masaüstü Düzenleyici Monitör Yükseltici · Şık Tasarım",
+    "description": "Monitörünüzü göz hizasına yükselterek boyun ağrılarını azaltan ve altındaki boşluk sayesinde klavyenizi gizlemenizi sağlayan şık, modüler monitör standı.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1735583-monitor-stand",
+    "thumbnail": "https://media.printables.com/media/prints/f5c3275c-2459-4e00-917d-d8287466d29f/images/13010774_5c0a49e7-d89f-445e-a05a-5663451ddfb8_80d14ee7-9d87-4cfa-8229-f7e81c9f791c/thumbs/inside/640x480/png/concept.webp",
+    "price": 112,
+    "category": "aksesuar",
+    "rating": 4.6,
+    "reviews": 232,
+    "dims": "137 × 137 × 52 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1714616",
+    "name": "Zıplayan Yaylı Disk",
+    "subtitle": "Esnek TPU Yay Sistemli Eğlenceli Disk · Zıplayan Yapı",
+    "description": "İçerisindeki dairesel yay geometrisi sayesinde yere atıldığında yüksek oranda zıplayan yenilikçi oyuncak disk. Özellikle TPU gibi esnek filamentlerle basıldığında tam performans gösterir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1714616-bouncy-puck",
+    "thumbnail": "https://media.printables.com/media/prints/d5e3d445-f206-4fc9-8aea-c3187bed474e/images/12885406_63d54296-82ec-4f17-b317-261c1642e507_122c6961-d30a-4c58-adfb-e51f5fd618c0/thumbs/inside/640x480/jpeg/img_5501.webp",
+    "price": 307,
+    "category": "aksesuar",
+    "rating": 4.9,
+    "reviews": 117,
+    "dims": "182 × 182 × 47 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1728548",
+    "name": "Bahçe & Balkon Otomatik Sulama Aparatı",
+    "subtitle": "Pet Şişe Uyumlu Akıllı Bitki Sulama Hunisi · Pratik Kullanım",
+    "description": "Standart pet şişeleri ters çevirerek saksı toprağına yavaşça su vermesini sağlayan damlama uçlu sulama aparatı. Tatillerde çiçeklerinizin kurumasını önlemek için pratik bir çözümdür.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1728548-watering-spike-for-garden-and-balcony",
+    "thumbnail": "https://media.printables.com/media/prints/7b78ea34-f1bc-4ffe-89c3-71c3a9dbd77a/images/12962287_5bb81691-6387-4f6b-822f-f5044aa2f4d6_b3f4494e-537d-4d12-81f3-f0a8188b9a71/thumbs/inside/640x480/png/watering-spike.webp",
+    "price": 74,
+    "category": "aksesuar",
+    "rating": 5.0,
+    "reviews": 424,
+    "dims": "159 × 159 × 74 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1718436",
+    "name": "Otomotiv Tipi Kablo İçi Sigorta Yuvası",
+    "subtitle": "Bıçak Tipi Sigortalar İçin Kablo Tipi Yuva · Güvenli Elektrik",
+    "description": "Standart oto bıçak sigortalarını kablo arasına güvenle bağlamanızı sağlayan kapaklı sigorta kutusu aparatı. ABS veya ASA gibi ısıya dayanıklı filamentlerle üretilmesi tavsiye edilir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1718436-short-inline-automotive-blade-fuse-holder",
+    "thumbnail": "https://media.printables.com/media/prints/9d705bd8-8ced-448c-ac4b-8840c4435d3b/images/12891383_9024662c-6bde-4c60-86c0-0aee2bdb1181_a0b5cd37-43b8-4f4c-b31f-cda5e06dee67/thumbs/inside/640x480/jpg/20260330_195840.webp",
+    "price": 257,
+    "category": "aksesuar",
+    "rating": 4.7,
+    "reviews": 137,
+    "dims": "102 × 102 × 17 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1714764",
+    "name": "Mini Eklemli Gece Ejderhası",
+    "subtitle": "Hareketli Kanat ve Gövdeli Ejderha Oyuncağı · Efsanevi Karakter",
+    "description": "Tüm omurgası ve kanatları hareketli olacak şekilde tasarlanmış, efsanevi ejderha figürü. Desteksiz olarak tek parça halinde basılabilir. Çocuklar ve koleksiyoncular için harika bir hediyedir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1714764-mini-flexi-night-dragon",
+    "thumbnail": "https://media.printables.com/media/prints/a3d1862f-32e1-45aa-96e9-3b9b0c476474/images/12867686_e39d3036-d0eb-4994-a2f4-fbf621552a75_4a61219b-38a2-4ef2-a373-71e0b650d3ce/thumbs/inside/640x480/jpg/mini-night-dragon-1.webp",
+    "price": 63,
+    "category": "oyuncak",
+    "rating": 4.5,
+    "reviews": 203,
+    "dims": "88 × 88 × 103 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1728331",
+    "name": "UFO Tasarımlı Estetik Gece Lambası",
+    "subtitle": "Retro Fütüristik Masa Lambası Şablonu · Loş Işık Keyfi",
+    "description": "İçerisine standart LED ampul veya şerit LED yerleştirerek kullanabileceğiniz, uzay gemisi formunda tasarlanmış göze hitap eden modern masa lambası. Şeffaf filamentler ile harika ışık süzülmesi sunar.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1728331-ufo-desklamp",
+    "thumbnail": "https://media.printables.com/media/prints/9026720d-c90b-4486-8321-cc5e37186bae/images/12960973_e1bbc950-54bf-41ae-a505-041dae59d940_a18ee189-d1e0-4ee9-8030-919031d1643e/thumbs/inside/640x480/png/gemini_generated_image_yid1mhyid1mhyid1.webp",
+    "price": 61,
+    "category": "dekor",
+    "rating": 4.9,
+    "reviews": 181,
+    "dims": "176 × 176 × 41 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1725221",
+    "name": "Pet Şişe Uyumlu Eşek Arısı Tuzağı",
+    "subtitle": "Kimyasal İçermeyen Doğal Böcek ve Arı Hunisi · Çevre Dostu",
+    "description": "Boş pet şişelerin yan tarafına delik açılarak takılan, içerisine şekerli su konularak sinek ve eşek arılarını yakalayan huni biçimli aparat. Yaz aylarında balkon ve bahçeler için kurtarıcıdır.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1725221-bottle-wasp-trap",
+    "thumbnail": "https://media.printables.com/media/prints/5d30597a-a34a-46d4-b8e5-a2e661084f2e/images/12941238_5887e52b-16d4-43e7-afd1-4a90a3b40598_73d46909-371f-46e8-9002-f508a0121c2e/thumbs/inside/640x480/jpg/33cefe9b-8fe2-4b37-a69b-83fd858e65f5.webp",
+    "price": 58,
+    "category": "aksesuar",
+    "rating": 4.6,
+    "reviews": 528,
+    "dims": "113 × 113 × 78 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1732231",
+    "name": "Star Wars AT-ST Walker Figürü",
+    "subtitle": "Yüksek Detaylı Ölçekli Keşif Aracı · İmparatorluk Yürüyücüsü",
+    "description": "Star Wars evreninin ikonik iki ayaklı keşif aracı AT-ST'nin 3D yazıcılar için optimize edilmiş yüksek detaylı parçalı modeli. Montaj gerektirir ve boyanmaya son derece uygundur.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1732231-at-st-walker-star-wars-vehicle-3d-printable",
+    "thumbnail": "https://media.printables.com/media/prints/aeb934bf-597e-4ebe-b102-c32b4f605354/images/12989259_9a688380-5a4b-4b03-9692-9c0386faab2a_6f9fddc4-dc17-48e7-9e65-788f55b3445f/thumbs/inside/640x480/png/at_st_photo1.webp",
+    "price": 311,
+    "category": "oyuncak",
+    "rating": 4.7,
+    "reviews": 491,
+    "dims": "186 × 186 × 51 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1732328",
+    "name": "Star Wars TIE Interceptor Savaş Gemisi",
+    "subtitle": "İmparatorluk Filosu Ölçekli Maket · Kolay Geçmeli Parçalar",
+    "description": "İmparatorluğun en hızlı avcı gemilerinden biri olan TIE Interceptor'ın yapıştırıcı gerektirmeden birbirine geçen parçalardan oluşan 3D maket modeli. Standıyla birlikte sergilenmeye hazırdır.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1732328-tie-interceptor-starfighter-star-wars-3d-printable",
+    "thumbnail": "https://media.printables.com/media/prints/99b90868-8c1d-49ee-9762-01260d623a59/images/12989852_d225d131-1e50-42c0-89a3-110aed002edd_94633905-c5df-4845-9430-017f666cd765/thumbs/inside/640x480/png/tie_interceptor_photo1.webp",
+    "price": 328,
+    "category": "oyuncak",
+    "rating": 4.6,
+    "reviews": 348,
+    "dims": "173 × 173 × 88 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1723329",
+    "name": "Eklemli Tatlı Yavru Kızıl Panda",
+    "subtitle": "Hareketli Oyuncak, Anahtarlık ve Magnet Uyumlu Mini Figür",
+    "description": "Büyük tüylü kuyruğu ve hareketli bacaklarıyla basabileceğiniz en şirin kızıl panda modeli. Sırtındaki delik sayesinde anahtarlık veya magnet olarak da kullanılabilir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1723329-fluffy-tail-cute-flexi-baby-red-panda-articulated",
+    "thumbnail": "https://media.printables.com/media/prints/5e29d4c4-808a-439e-ab98-7de50f458851/images/12927377_30f3867c-28a8-4396-95d1-8955d503fbf7_cac81a46-df04-47f6-9d1b-3ac87beb0cfc/thumbs/inside/640x480/png/461.webp",
+    "price": 125,
+    "category": "dekor",
+    "rating": 4.7,
+    "reviews": 525,
+    "dims": "60 × 60 × 25 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1735723",
+    "name": "The Mandalorian - Düşünen Heykel",
+    "subtitle": "Büst & Heykel Formunda Detaylı Tasarım · Koleksiyonluk Sanat",
+    "description": "Din Djarin'in (Mando) miğferiyle tahtında veya kayasında oturup düşündüğü sahneden esinlenilen sanatsal heykel büstü. Yüksek detaylı reçine (Resin) veya kaliteli PLA baskılar için uygundur.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1735723-the-mandalorian-contemplation-statue",
+    "thumbnail": "https://media.printables.com/media/prints/39d026a0-e1c7-4270-b25d-8aea7a8c4f60/images/13011557_5f558544-359b-4b45-acf7-1481f68daa28_ab1ec3e0-dc26-4f3e-b649-9e7cea91b714/thumbs/inside/640x480/jpg/sm-2.webp",
+    "price": 116,
+    "category": "oyuncak",
+    "rating": 5.0,
+    "reviews": 326,
+    "dims": "111 × 111 × 76 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1715794",
+    "name": "Rulmanlı Kablo Kasnağı / Makara",
+    "subtitle": "Sürtünmesiz Makaralı Kablo Yönlendirme Sistemi · Mekanik",
+    "description": "İçerisine 608 rulman takılarak kabloları veya ipleri pürüzsüzce yönlendirmenizi sağlayan rulmanlı makara kasnağı. Spor aletleri veya atölye mekanizmaları için dayanıklıdır.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1715794-cable-pulley",
+    "thumbnail": "https://media.printables.com/media/prints/95032f22-27a3-491b-ad09-ae6869333209/images/12875625_673e8af6-66ce-4e9a-9196-dac9afb314f4_5f4a92c8-71ab-46f7-a7d7-4219517a904e/thumbs/inside/640x480/jpg/20260509_211250.webp",
+    "price": 385,
+    "category": "aksesuar",
+    "rating": 4.9,
+    "reviews": 425,
+    "dims": "170 × 170 × 85 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1722657",
+    "name": "Eklemli Hareketli Karıncayiyen (Pangolin)",
+    "subtitle": "Gerçekçi Pullu ve Hareketli Hayvan Figürü · PiP Tasarım",
+    "description": "Gerçek bir pangolin gibi kıvrılıp top haline gelebilen, pulları tek tek hareketli yenilikçi eklem yapısına sahip 3D figür. Desteksiz olarak tek seferde basılır ve harika bir stres oyuncağıdır.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1722657-articulated-pangolin",
+    "thumbnail": "https://media.printables.com/media/prints/3549d14f-590c-4cfb-82e5-b3148fda5fe0/images/12933721_0e4e7895-f813-4a8a-b779-5edf0c630b62_1e423379-2a2a-458d-bcab-8fcf4bcc9411/thumbs/inside/640x480/jpg/20260517_201043986.webp",
+    "price": 193,
+    "category": "dekor",
+    "rating": 4.9,
+    "reviews": 33,
+    "dims": "98 × 98 × 13 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1732333",
+    "name": "Star Wars X-Wing Savaş Gemisi",
+    "subtitle": "Asi Birliği İkonik Avcı Uçağı Maketi · Detaylı Parça Seti",
+    "description": "Star Wars evreninin efsanevi savaş gemisi X-Wing Starfighter'ın kanatları açılıp kapanabilen, standlı ve yüksek detaylı 3D modeli. Sergilemek isteyen bilimkurgu hayranları için mükemmeldir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1732333-x-wing-fighter-starship-star-wars-3d-printable",
+    "thumbnail": "https://media.printables.com/media/prints/404a806c-5be7-4266-a9ef-bd5f4d079130/images/12989868_ad7175cc-3c7c-4525-89d9-fa7ec556a1b9_3355c5fc-f05e-4fca-b995-92aefd5a31b8/thumbs/inside/640x480/png/x_wing_photo1.webp",
+    "price": 184,
+    "category": "oyuncak",
+    "rating": 4.6,
+    "reviews": 184,
+    "dims": "179 × 179 × 44 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1740060",
+    "name": "Katlanabilir Modüler Ayakkabılık",
+    "subtitle": "Tek Seferde Basılan Katlanır Ayakkabı Rafı · Mekanik Tasarım",
+    "description": "Eklemleriyle birlikte tek seferde basılıp açılan, modüler olarak üst üste eklenebilen katlanabilir ayakkabı rafı sistemi. Antrede alan tasarrufu yapmanızı sağlar.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1740060-folding-shoe-rack-print-in-place",
+    "thumbnail": "https://media.printables.com/media/prints/ea038090-68fb-40fd-9ab5-b92ec03b7303/images/13067370_3244e04d-6d7f-4c53-b884-0f7723820790_ca670771-856c-497d-8a5a-617a656f6af2/thumbs/inside/640x480/jpg/shoerack2.webp",
+    "price": 401,
+    "category": "aksesuar",
+    "rating": 4.7,
+    "reviews": 391,
+    "dims": "96 × 96 × 61 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1739140",
+    "name": "Pratik Ayakkabı Asma Klipsi",
+    "subtitle": "Ayakkabıları Düzenli Asmak İçin Çiftli Askı Aparatı",
+    "description": "Spor ayakkabılarınızı veya botlarınızı dolap raylarına ya da askılıklara çift olarak asmanızı sağlayan dayanıklı ve esnek tasarımlı klips aparatı.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1739140-shoe-hanging-clip",
+    "thumbnail": "https://media.printables.com/media/prints/11380f74-199b-48ef-9c80-902392c75c45/images/13035485_f0b798e6-6c85-4b0e-9e54-a86c39800597_c400b583-752c-43bf-9e05-134fcb500795/thumbs/inside/640x480/png/document.webp",
+    "price": 334,
+    "category": "aksesuar",
+    "rating": 4.6,
+    "reviews": 224,
+    "dims": "119 × 119 × 34 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1725737",
+    "name": "Ropener - Akıllı Stor Perde Açıcı",
+    "subtitle": "Akıllı Ev Uyumlu Otomatik Perde Motoru Aparatı · Açık Kaynak",
+    "description": "Stor perdelerin zincir mekanizmasına bağlanarak motor yardımıyla perdeleri otomatik açıp kapatan açık kaynak kodlu aparat seti. ESPHome ve Home Assistant entegrasyonu için yuvaları hazırdır.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1725737-ropener-open-source-smart-curtain-opener-esphome-h",
+    "thumbnail": "https://media.printables.com/media/prints/73fc4e29-60e2-4dad-83bb-f1e94e7f4b44/images/12952832_6c9ccb3f-daee-4531-bb33-12ee87ef3a61_89aa25a8-dd6a-4fd2-99b3-780af8e2e4e4/thumbs/inside/640x480/jpg/ropener-kit-21.webp",
+    "price": 162,
+    "category": "dekor",
+    "rating": 4.8,
+    "reviews": 522,
+    "dims": "67 × 67 × 82 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1731380",
+    "name": "Pratik Çilek Sapı Ayıklayıcı",
+    "subtitle": "Meyve Saplarını Hızlıca Ayıklayan Hijyenik Aparat",
+    "description": "Çilek ve benzeri meyvelerin saplarını ezmeden, tek hamlede kolayca çıkaran ergonomik ve temizlemesi kolay mutfak yardımcısı aparatı.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1731380-strawberry-stem-remover",
+    "thumbnail": "https://media.printables.com/media/prints/1731380/images/12983018_ecd9d0b4-0cb7-42dc-b342-94573f48ee70_269cc770-b19d-43a8-899e-02b2b7de8af1/thumbs/inside/640x480/jpg/image_1731380.webp",
+    "price": 210,
+    "category": "aksesuar",
+    "rating": 4.8,
+    "reviews": 470,
+    "dims": "85 × 85 × 50 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1729695",
+    "name": "Desteksiz Basılabilen Bilyeler",
+    "subtitle": "Pürüzsüz Dairesel Mermer ve Bilye Seti · Desteksiz Baskı",
+    "description": "3D yazıcılarda alt kısımlarında çökme olmadan, destek malzemesi kullanmadan tamamen pürüzsüz küreler basabilmeniz için tasarlanmış özel bilye modelleri.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1729695-no-support-marbles",
+    "thumbnail": "https://media.printables.com/media/prints/10ffd8ae-34d3-4ff6-8945-6d67aa75e368/images/12987776_54c24d4f-852a-4a1a-8a0a-31a32abbde27_2f896bd1-28e9-4302-ab06-92fc53e5bae2/thumbs/inside/640x480/png/3d-printable-marble-2000-x-1500-px-1.webp",
+    "price": 47,
+    "category": "aksesuar",
+    "rating": 4.7,
+    "reviews": 197,
+    "dims": "132 × 132 × 47 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1718473",
+    "name": "Barok Tarzı Oval Çerçeve",
+    "subtitle": "Sanatsal Klasik Duvar Çerçevesi · CNC & 3D Uyumlu Detay",
+    "description": "Klasik İtalyan barok tarzı deniz kabuğu motifleriyle süslenmiş, ayna veya resimleriniz için kullanabileceğiniz duvar çerçevesi modeli. Altın sarısı veya bronz renklerle şık durur.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1718473-baroque-shell-oval-frame-3d-stl-model-for-cnc-and",
+    "thumbnail": "https://media.printables.com/media/prints/1ca5e423-8bbd-42dd-9d09-f8b9f012c248/images/12891700_2878fecd-6246-4176-a230-4e4c98e0a718_a0b62804-5f2e-4e4c-891c-63f8a55b0443/thumbs/inside/640x480/jpg/impaginazione-rendering-19.webp",
+    "price": 288,
+    "category": "dekor",
+    "rating": 4.8,
+    "reviews": 438,
+    "dims": "103 × 103 × 68 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1727689",
+    "name": "9 Gramlık Eklemli Minik Kalamar",
+    "subtitle": "Ultra Hafif Hareketli Tentaküllü Kalamar Oyuncağı",
+    "description": "Yalnızca 9 gram filament harcayarak çok kısa sürede basılabilen, tüm kolları hareketli ve esnek minik kalamar figürü. Özellikle çocuklar için sevimli bir stres oyuncağıdır.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1727689-calamar-de-9g-squid-petit-jouet-a-tentacules-mobil",
+    "thumbnail": "https://media.printables.com/media/prints/bc4676c3-4e24-4c86-af7c-f583a83e1005/images/12956803_2afb64d9-b3cd-4ec2-81c9-84623792b7cb_1693494a-dc94-4ee8-93b2-ddaacd2ac2d5/thumbs/inside/640x480/png/copilot_20260520_151648.webp",
+    "price": 197,
+    "category": "oyuncak",
+    "rating": 4.7,
+    "reviews": 437,
+    "dims": "42 × 42 × 57 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1721715",
+    "name": "Daire Çizim ve İşaretleme Aparatı",
+    "subtitle": "Farklı Çaplarda Daire Çizmek İçin Atölye Cetveli",
+    "description": "Ortasına bir kalem yerleştirerek dilediğiniz çapta kusursuz daireler çizmenizi ve merkez noktası bulmanızı sağlayan pratik marangozluk ve hobi cetvel aparatı.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1721715-circle-marker-tool",
+    "thumbnail": "https://media.printables.com/media/prints/f2a9232b-7c99-475a-a80f-7267577be6d8/images/12914859_4f53805e-817a-494f-a2d7-1200a6b305f8_b14dad25-6219-4008-9837-8c5805d11e7f/thumbs/inside/640x480/png/cuddlebun-toy-19.webp",
+    "price": 305,
+    "category": "mekanik",
+    "rating": 4.7,
+    "reviews": 535,
+    "dims": "150 × 150 × 65 mm",
+    "accentColor": "#8B5CF6",
+    "badge": "⭐ Popüler",
+    "badgeColor": "#8B5CF6",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1738755",
+    "name": "Sağlam Evrensel El Aletleri Askısı",
+    "subtitle": "Tornavida, Pense ve Anahtarlar İçin Düzenleyici Panel",
+    "description": "Atölyenizde veya garajınızda tornavida, pense, kumpas gibi el aletlerini düzenli ve el altında tutmanızı sağlayan modüler duvar paneli askısı.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1738755-strong-universal-tool-holder",
+    "thumbnail": "https://media.printables.com/media/prints/6aff1cff-6970-4953-887c-04b4aa2afd42/images/13042154_499957eb-87d3-4f42-9c95-b972902a95f3_e7010b99-0cf1-463a-b862-29855101467b/thumbs/inside/640x480/jpg/v14372.webp",
+    "price": 99,
+    "category": "aksesuar",
+    "rating": 4.5,
+    "reviews": 439,
+    "dims": "124 × 124 × 39 mm",
+    "accentColor": "#A1A1AA",
+    "badge": "Top Model",
+    "badgeColor": "#A1A1AA",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1716804",
+    "name": "Baykuşlu Rüzgar Çanı",
+    "subtitle": "Rüzgarda Ses Çıkaran Estetik Baykuşlu Bahçe Dekoru",
+    "description": "Balkonunuza veya bahçenize asabileceğiniz, rüzgar estikçe birbirine çarparak hoş sesler çıkaran baykuş figürlü dekoratif rüzgar çanı seti.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1716804-hooting-owl-wind-chime",
+    "thumbnail": "https://media.printables.com/media/prints/5956a600-a40a-4e3d-b1c5-d9b8f0a16253/images/12934543_735c66e3-e40c-4c13-9f0e-8acd8461c04d_680a4e60-8bfc-43f3-bd68-63d06a72e63d/thumbs/inside/640x480/webp/hooting-wind-chimes-owls-v0-e39jlqxg151h1.webp",
+    "price": 102,
+    "category": "dekor",
+    "rating": 4.8,
+    "reviews": 212,
+    "dims": "157 × 157 × 22 mm",
+    "accentColor": "#10B981",
+    "badge": "🥇 Çok Satan",
+    "badgeColor": "#10B981",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  },
+  {
+    "id": "printables-1734575",
+    "name": "Kademeli Mekanik Kartlık V2",
+    "subtitle": "Kızaklı Mekanizmaya Sahip İnce Kartlık Cüzdan V2",
+    "description": "Alttaki tetik çekildiğinde kartlarınızı kademeli olarak yukarı fırlatan, cebinizde yer kaplamayan modern kızaklı cüzdan tasarımı. Plakalarla güçlendirilmiştir.",
+    "designer": "",
+    "printablesUrl": "https://www.printables.com/model/1734575-cascade-card-wallet-v2",
+    "thumbnail": "https://media.printables.com/media/prints/a99c32ad-810a-45df-9194-809c6af80700/images/13035553_416d01e9-9763-4a3e-af63-dc4986db5d77_3adada31-22c0-43e4-ad3e-a49fa38419a3/thumbs/inside/640x480/png/screenshot-2026-05-25-154103.webp",
+    "price": 308,
+    "category": "aksesuar",
+    "rating": 5.0,
+    "reviews": 288,
+    "dims": "123 × 123 × 88 mm",
+    "accentColor": "#F97316",
+    "badge": "🏆 Yılın Modeli",
+    "badgeColor": "#F97316",
+    "availableMaterials": [
+      "pla",
+      "petg",
+      "abs",
+      "resin"
+    ],
+    "defaultMaterial": "pla",
+    "defaultQuality": "standard",
+    "colors": [
+      {
+        "name": "Siyah",
+        "hex": "#111827"
+      },
+      {
+        "name": "Beyaz",
+        "hex": "#F9FAFB"
+      },
+      {
+        "name": "Kırmızı",
+        "hex": "#EF4444"
+      },
+      {
+        "name": "Mavi",
+        "hex": "#3B82F6"
+      },
+      {
+        "name": "Gri",
+        "hex": "#6B7280"
+      }
+    ],
+    buildFn: buildPlanter
+  }
 ];
 
-// Per-card state (color, material, quality, refs)
-const cardStates = new Map();
 
-// ══════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════
+let wishlist = [];
+let searchQuery = '';
+let categoryFilter = 'all';
+let maxPriceFilter = 1000;
+let onlyWishlistFilter = false;
+let sortMode = 'default';
+let shopCurrentPage = 1;
+const ITEMS_PER_PAGE = 6;
+let shopFilteredProducts = [];
+
+// Three.js Quick View reference state
+let qvScene = null;
+let qvRenderer = null;
+let qvCamera = null;
+let qvControls = null;
+let qvModelGroup = null;
+let qvRafId = null;
+let qvClock = null;
+let qvAutoRotate = true;
+
 export function initShop() {
+  initWishlist();
   renderShopSection();
-  initFilters();
+  initSidebarEvents();
   initCartBadge();
-  initColorPickers();
-  initMaterialQualitySelectors();
 
   // Register dynamically added .reveal elements
   const shopSection = document.getElementById('shop');
@@ -198,70 +1842,273 @@ export function initShop() {
       shopSection.querySelectorAll('.reveal:not(.in-view)').forEach(el => el.classList.add('in-view'));
     }, 300);
   }
+}
 
-  const uploadInput = document.getElementById('file-input-custom-upload');
-  if (uploadInput) {
-    uploadInput.addEventListener('change', (e) => {
-      if (e.target.files && e.target.files[0]) {
-        loadUserSTL(e.target.files[0], 'custom-upload');
-      }
-    });
+function initWishlist() {
+  try {
+    const saved = localStorage.getItem('shop_wishlist');
+    wishlist = saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    wishlist = [];
   }
 }
 
-// ══════════════════════════════════════════════════════
-// RENDER
-// ══════════════════════════════════════════════════════
-const ITEMS_PER_PAGE = 6;
-let shopCurrentPage = 1;
-let shopFilteredProducts = [];
+function toggleWishlist(pid, btn) {
+  const index = wishlist.indexOf(pid);
+  if (index === -1) {
+    wishlist.push(pid);
+    btn.classList.add('active');
+    const svg = btn.querySelector('svg');
+    if (svg) svg.setAttribute('fill', 'currentColor');
+    showToast('❤️ Ürün favorilerinize eklendi!');
+  } else {
+    wishlist.splice(index, 1);
+    btn.classList.remove('active');
+    const svg = btn.querySelector('svg');
+    if (svg) svg.setAttribute('fill', 'none');
+    showToast('💔 Ürün favorilerinizden çıkarıldı.');
+  }
+  localStorage.setItem('shop_wishlist', JSON.stringify(wishlist));
+  
+  if (onlyWishlistFilter) {
+    updateFilters();
+  }
+}
 
 function renderShopSection() {
   const section = document.getElementById('shop');
   if (!section) return;
 
-  // exclude the custom-upload from main shop grid (it lives in viewer)
   const shopProducts = PRODUCTS.filter(p => p.id !== 'custom-upload');
-  shopFilteredProducts = shopProducts;
-
+  
   section.innerHTML = `
     <div class="container">
       <div class="section-label-bar">
-        <span class="section-label-tag">Ma\u011faza</span>
+        <span class="section-label-tag">Mağaza</span>
       </div>
       <div class="section-header reveal">
         <div class="section-pill" style="color:#EDEDED;border-color:rgba(237,237,237,0.2);background:rgba(237,237,237,0.05)">
-          ${shopProducts.length}+ Haz\u0131r Model
+          Premium Tasarımlar
         </div>
-        <h2 class="section-title">3D Bask\u0131 <span class="gradient-text">Ma\u011fazas\u0131</span></h2>
-        <p class="section-desc">Her model interaktif 3D \u00f6nizleme, renk se\u00e7ici ve canl\u0131 fiyat hesaplay\u0131c\u0131 ile gelir.</p>
+        <h2 class="section-title">3D Baskı <span class="gradient-text">Koleksiyonu</span></h2>
+        <p class="section-desc">En popüler Printables tasarımları, anlık arama, favoriler ve etkileşimli 3D hızlı önizleme modali ile yeniden tasarlandı.</p>
       </div>
 
-      <div class="shop-filters" id="shop-filters">
-        <button class="shop-filter-btn active" data-filter="all">T\u00fcm\u00fc <span class="filter-count">${shopProducts.length}</span></button>
-        <button class="shop-filter-btn" data-filter="mekanik">\u2699\ufe0f Mekanik <span class="filter-count">${shopProducts.filter(p=>p.category==='mekanik').length}</span></button>
-        <button class="shop-filter-btn" data-filter="dekor">\u{1f3e0} Dekor <span class="filter-count">${shopProducts.filter(p=>p.category==='dekor').length}</span></button>
-        <button class="shop-filter-btn" data-filter="aksesuar">\u{1f392} Aksesuar <span class="filter-count">${shopProducts.filter(p=>p.category==='aksesuar').length}</span></button>
-        <div class="shop-filter-spacer"></div>
-        <select class="shop-sort-select" id="shop-sort">
-          <option value="default">S\u0131rala</option>
-          <option value="price-asc">Fiyat \u2191</option>
-          <option value="price-desc">Fiyat \u2193</option>
-          <option value="rating">En Y\u00fcksek Puan</option>
-        </select>
-      </div>
+      <div class="shop-layout">
+        <!-- Sol: Filtreleme Paneli (Sidebar) -->
+        <aside class="shop-sidebar">
+          <!-- Arama Çubuğu -->
+          <div class="sidebar-block">
+            <label class="sidebar-label" for="shop-search">🔎 Arama</label>
+            <div class="search-input-wrapper">
+              <input type="text" id="shop-search" class="sidebar-input" placeholder="Model ara..." value="${searchQuery}" />
+            </div>
+          </div>
 
-      <div class="shop-grid" id="shop-grid"></div>
-      <div class="shop-pagination" id="shop-pagination"></div>
+          <!-- Kategoriler -->
+          <div class="sidebar-block">
+            <label class="sidebar-label">📂 Kategoriler</label>
+            <div class="sidebar-categories">
+              <button class="sidebar-cat-btn ${categoryFilter === 'all' ? 'active' : ''}" data-filter="all">
+                <span>Tümü</span>
+                <span class="cat-count">${shopProducts.length}</span>
+              </button>
+              <button class="sidebar-cat-btn ${categoryFilter === 'mekanik' ? 'active' : ''}" data-filter="mekanik">
+                <span>⚙️ Mekanik</span>
+                <span class="cat-count">${shopProducts.filter(p => p.category === 'mekanik').length}</span>
+              </button>
+              <button class="sidebar-cat-btn ${categoryFilter === 'dekor' ? 'active' : ''}" data-filter="dekor">
+                <span>🏠 Dekor</span>
+                <span class="cat-count">${shopProducts.filter(p => p.category === 'dekor').length}</span>
+              </button>
+              <button class="sidebar-cat-btn ${categoryFilter === 'aksesuar' ? 'active' : ''}" data-filter="aksesuar">
+                <span>🎒 Aksesuar</span>
+                <span class="cat-count">${shopProducts.filter(p => p.category === 'aksesuar').length}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Fiyat Aralığı Slider'ı -->
+          <div class="sidebar-block">
+            <div class="price-range-header">
+              <label class="sidebar-label" for="price-range-slider">💰 Maksimum Fiyat</label>
+              <span id="price-slider-val" class="price-slider-val">₺${maxPriceFilter}</span>
+            </div>
+            <input type="range" id="price-range-slider" min="50" max="1000" step="25" value="${maxPriceFilter}" class="sidebar-range" />
+            <div class="range-labels">
+              <span>₺50</span>
+              <span>₺1000</span>
+            </div>
+          </div>
+
+          <!-- Favoriler Filtresi ve Sıralama -->
+          <div class="sidebar-block">
+            <label class="sidebar-label">⚙️ Seçenekler</label>
+            
+            <!-- Favoriler Toggle -->
+            <button id="wishlist-toggle-btn" class="wishlist-toggle-btn ${onlyWishlistFilter ? 'active' : ''}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="${onlyWishlistFilter ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              Sadece Favoriler
+            </button>
+
+            <!-- Sıralama Dropdown -->
+            <div style="margin-top: 16px;">
+              <select class="shop-sort-select" id="shop-sort" style="width: 100%;">
+                <option value="default" ${sortMode === 'default' ? 'selected' : ''}>Sıralama (Önerilen)</option>
+                <option value="price-asc" ${sortMode === 'price-asc' ? 'selected' : ''}>Fiyat: Düşükten Yükseğe</option>
+                <option value="price-desc" ${sortMode === 'price-desc' ? 'selected' : ''}>Fiyat: Yüksekten Düşüğe</option>
+                <option value="rating" ${sortMode === 'rating' ? 'selected' : ''}>Müşteri Puanı</option>
+              </select>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Sağ: Ürün Listesi Grid'i -->
+        <main class="shop-content">
+          <div class="shop-grid" id="shop-grid"></div>
+          <div class="shop-pagination" id="shop-pagination"></div>
+        </main>
+      </div>
+    </div>
+
+    <!-- 3D Hızlı Önizleme Modali (Quick View) -->
+    <div id="shop-quickview-modal" class="shop-modal" aria-hidden="true">
+      <div class="shop-modal-backdrop" id="modal-backdrop-close"></div>
+      <div class="shop-modal-container">
+        <button class="shop-modal-close" id="modal-close-btn" aria-label="Kapat">&times;</button>
+        <div class="shop-modal-content">
+          <!-- Sol Kolon: 3D Viewport -->
+          <div class="shop-modal-viewer-col">
+            <div class="shop-modal-canvas-wrap">
+              <canvas id="quickview-canvas"></canvas>
+              <div class="shop-modal-canvas-controls">
+                <button class="canvas-ctrl-btn" id="qv-ctrl-rotate">↺ Oto</button>
+                <button class="canvas-ctrl-btn" id="qv-ctrl-reset">Sıfırla</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sağ Kolon: Detaylar -->
+          <div class="shop-modal-info-col">
+            <div class="shop-modal-badge" id="qv-badge">Badge</div>
+            <h3 class="shop-modal-title" id="qv-title">Ürün Adı</h3>
+            <p class="shop-modal-subtitle" id="qv-subtitle">Ürün Alt Başlığı</p>
+            
+            <div class="shop-modal-meta">
+              <span class="shop-modal-rating" id="qv-rating">★★★★★ 5.0</span>
+              <span class="shop-modal-designer" id="qv-designer">soozafone</span>
+            </div>
+
+            <div class="shop-modal-specs">
+              <div class="qv-spec-row"><strong>📐 Boyutlar:</strong> <span id="qv-dims">Belirsiz</span></div>
+              <div class="qv-spec-row"><strong>📂 Kategori:</strong> <span id="qv-category">Mekanik</span></div>
+            </div>
+
+            <!-- İnteraktif Renk ve Fiyat Hesaplayıcı -->
+            <div class="qv-config-section">
+              <div class="qv-config-label">Renk Seçimi</div>
+              <div class="qv-color-swatches" id="qv-color-swatches"></div>
+              <div class="qv-selected-color-label">Renk: <span id="qv-selected-color-name">-</span></div>
+            </div>
+
+            <div class="qv-price-box">
+              <span class="qv-price-label">Fiyat Aralığı:</span>
+              <span class="qv-price-value" id="qv-price-val">₺0 - ₺0</span>
+            </div>
+
+            <div class="qv-actions">
+              <a href="#" id="qv-customize-btn" class="qv-btn-primary">
+                ⚙️ Siparişi Özelleştir & Satın Al
+              </a>
+              <button id="qv-cart-quick-btn" class="qv-btn-secondary">
+                🛒 Hızlı Sepete Ekle
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 
-  renderShopPage(1);
+  updateFilters();
+}
 
-  document.querySelectorAll('.shop-wish-btn').forEach(btn => {
-    btn.addEventListener('click', e => { btn.classList.toggle('active'); e.stopPropagation(); });
+function initSidebarEvents() {
+  const searchInput = document.getElementById('shop-search');
+  const slider = document.getElementById('price-range-slider');
+  const sliderVal = document.getElementById('price-slider-val');
+  const wishlistToggle = document.getElementById('wishlist-toggle-btn');
+  const sortSelect = document.getElementById('shop-sort');
+
+  searchInput?.addEventListener('input', (e) => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    updateFilters();
   });
-  document.getElementById('shop-sort')?.addEventListener('change', e => sortProducts(e.target.value));
+
+  document.querySelectorAll('.sidebar-cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sidebar-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      categoryFilter = btn.dataset.filter;
+      updateFilters();
+    });
+  });
+
+  slider?.addEventListener('input', (e) => {
+    maxPriceFilter = parseInt(e.target.value);
+    if (sliderVal) sliderVal.textContent = `₺${maxPriceFilter}`;
+    updateFilters();
+  });
+
+  wishlistToggle?.addEventListener('click', () => {
+    onlyWishlistFilter = !onlyWishlistFilter;
+    wishlistToggle.classList.toggle('active', onlyWishlistFilter);
+    const svg = wishlistToggle.querySelector('svg');
+    if (svg) svg.setAttribute('fill', onlyWishlistFilter ? 'currentColor' : 'none');
+    updateFilters();
+  });
+
+  sortSelect?.addEventListener('change', (e) => {
+    sortMode = e.target.value;
+    updateFilters();
+  });
+
+  // Modal close handlers
+  document.getElementById('modal-close-btn')?.addEventListener('click', closeQuickView);
+  document.getElementById('modal-backdrop-close')?.addEventListener('click', closeQuickView);
+}
+
+function updateFilters() {
+  const shopProducts = PRODUCTS.filter(p => p.id !== 'custom-upload');
+  
+  shopFilteredProducts = shopProducts.filter(p => {
+    if (categoryFilter !== 'all' && p.category !== categoryFilter) return false;
+    
+    if (searchQuery) {
+      const matchName = p.name.toLowerCase().includes(searchQuery);
+      const matchSub = p.subtitle.toLowerCase().includes(searchQuery);
+      const matchDes = (p.designer || '').toLowerCase().includes(searchQuery);
+      if (!matchName && !matchSub && !matchDes) return false;
+    }
+
+    if (p.price > maxPriceFilter) return false;
+
+    if (onlyWishlistFilter && !wishlist.includes(p.id)) return false;
+
+    return true;
+  });
+
+  if (sortMode === 'price-asc') {
+    shopFilteredProducts.sort((a, b) => a.price - b.price);
+  } else if (sortMode === 'price-desc') {
+    shopFilteredProducts.sort((a, b) => b.price - a.price);
+  } else if (sortMode === 'rating') {
+    shopFilteredProducts.sort((a, b) => b.rating - a.rating);
+  }
+
+  renderShopPage(1);
 }
 
 function renderShopPage(page) {
@@ -269,19 +2116,45 @@ function renderShopPage(page) {
   const grid = document.getElementById('shop-grid');
   if (!grid) return;
 
+  if (shopFilteredProducts.length === 0) {
+    grid.innerHTML = `
+      <div class="shop-empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 16px; color: var(--muted);">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">Model Bulunamadı</h3>
+        <p style="color: var(--muted); font-size: 0.85rem; max-width: 280px; margin: 0 auto;">Arama veya filtre kriterlerinize uyan bir tasarım bulunamadı. Lütfen filtrelerinizi temizleyin.</p>
+      </div>
+    `;
+    const paginationContainer = document.getElementById('shop-pagination');
+    if (paginationContainer) paginationContainer.innerHTML = '';
+    return;
+  }
+
   const totalPages = Math.ceil(shopFilteredProducts.length / ITEMS_PER_PAGE);
   const start = (page - 1) * ITEMS_PER_PAGE;
   const pageProducts = shopFilteredProducts.slice(start, start + ITEMS_PER_PAGE);
 
   grid.innerHTML = pageProducts.map(p => renderProductCard(p)).join('');
 
-  pageProducts.forEach(p => {
-    const canvas = document.getElementById(`canvas-${p.id}`);
-    if (canvas) init3DCard(canvas, p);
+  grid.querySelectorAll('.shop-wish-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pid = btn.dataset.id;
+      toggleWishlist(pid, btn);
+    });
+  });
+
+  grid.querySelectorAll('.shop-card-quickview-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pid = btn.dataset.id;
+      openQuickView(pid);
+    });
   });
 
   renderPagination(totalPages);
-  // Scroll to shop top when changing page
+
   if (page !== 1) {
     document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -308,9 +2181,7 @@ function renderPagination(totalPages) {
   });
 }
 
-// ── Card HTML — Sadeleştirilmiş (yalnızca önizleme + fiyat aralığı) ─────────────
 function renderProductCard(p) {
-  // Malzemeye göre min/max fiyat hesapla
   const prices = p.availableMaterials.map(mid => {
     const matMult = MATERIALS_DB[mid].mult;
     const minQ = Math.min(...QUALITIES_DB.map(q => q.mult));
@@ -323,162 +2194,311 @@ function renderProductCard(p) {
   const minPrice = Math.min(...prices.map(pr => pr.min));
   const maxPrice = Math.max(...prices.map(pr => pr.max));
 
+  const isFavorited = wishlist.includes(p.id);
+  const imgUrl = p.thumbnail || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=640&auto=format&fit=crop';
+
+  const designerHtml = p.designer && p.designer !== 'CustomShape3D' && p.designer !== 'Siz'
+    ? `<div class="shop-card-designer">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        ${p.designer}
+       </div>`
+    : '';
+
   return `
-    <div class="shop-card reveal" data-category="${p.category}" data-id="${p.id}" id="card-${p.id}"
-         style="cursor:pointer;"
-         onclick="window.open('/product.html?id=${p.id}', '_blank')">
-      <!-- 3D Viewer -->
-      <div class="shop-card-viewer">
-        <canvas id="canvas-${p.id}" class="shop-canvas"></canvas>
-        <div class="shop-card-badge" style="background:${p.badgeColor}22;color:${p.badgeColor};border-color:${p.badgeColor}44">${p.badge}</div>
-        <div class="shop-drag-hint">↺ Döndür</div>
+    <div class="shop-card reveal" data-id="${p.id}" id="card-${p.id}"
+         onclick="window.location.href='product.html?id=${p.id}'">
+      
+      <div class="shop-card-media">
+        <img src="${imgUrl}" alt="${p.name}" class="shop-card-img" loading="lazy" />
+        <div class="shop-card-overlay">
+          <button class="shop-card-quickview-btn" data-id="${p.id}" title="3D Hızlı Önizleme">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            3D Önizleme
+          </button>
+        </div>
+        
+        <div class="shop-card-badge" style="background:${p.badgeColor}d8;color:#fff;border-color:transparent">${p.badge}</div>
+        
+        <button class="shop-wish-btn ${isFavorited ? 'active' : ''}" data-id="${p.id}" aria-label="Favorilere Ekle">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="${isFavorited ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
       </div>
 
-      <!-- Body — sade kart altı (yalnızca isim, alt başlık ve malzemeye göre min-max fiyat) -->
-      <div class="shop-card-body shop-card-body--simple">
+      <div class="shop-card-body">
         <h3 class="shop-card-name">${p.name}</h3>
         <p class="shop-card-sub">${p.subtitle}</p>
-        <div class="shop-card-price-range">
-          <span class="price-range-label">Fiyat Aralığı:</span>
-          <span class="price-range-value">₺${minPrice} - ₺${maxPrice}</span>
+        ${designerHtml}
+        <div class="shop-card-footer">
+          <div class="shop-card-stars">★ ${p.rating}</div>
+          <div class="shop-card-price">₺${minPrice} - ₺${maxPrice}</div>
         </div>
       </div>
     </div>
   `;
 }
 
-// ══════════════════════════════════════════════════════
-// 3D CARD VIEWER
-// ══════════════════════════════════════════════════════
-function init3DCard(canvas, product) {
-  const scene    = new THREE.Scene();
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x060A14, 0); // Derin koyu mavi — maksimum kontrast
+function openQuickView(productId) {
+  const p = PRODUCTS.find(prod => prod.id === productId);
+  if (!p) return;
 
-  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-  camera.position.set(0, 0.6, 5.5);
+  const modal = document.getElementById('shop-quickview-modal');
+  if (!modal) return;
 
-  function resize() {
-    const w = canvas.offsetWidth  || 280;
-    const h = canvas.offsetHeight || 210;
-    renderer.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
+  modal.setAttribute('aria-hidden', 'false');
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  const badge = document.getElementById('qv-badge');
+  badge.textContent = p.badge;
+  badge.style.background = p.badgeColor + '22';
+  badge.style.color = p.badgeColor;
+  badge.style.border = `1px solid ${p.badgeColor}44`;
+
+  document.getElementById('qv-title').textContent = p.name;
+  document.getElementById('qv-subtitle').textContent = p.subtitle;
+  document.getElementById('qv-rating').textContent = `★ ${p.rating} (${p.reviews} değerlendirme)`;
+  document.getElementById('qv-designer').textContent = p.designer ? `Tasarımcı: ${p.designer}` : '';
+  document.getElementById('qv-dims').textContent = p.dims;
+  document.getElementById('qv-category').textContent = p.category === 'mekanik' ? '⚙️ Mekanik' : p.category === 'dekor' ? '🏠 Dekor' : '🎒 Aksesuar';
+
+  const customizeBtn = document.getElementById('qv-customize-btn');
+  if (customizeBtn) {
+    customizeBtn.setAttribute('href', `product.html?id=${p.id}`);
   }
-  resize();
-  new ResizeObserver(resize).observe(canvas.parentElement);
 
-  // TOK GÖRÜNÜM — Güçlü, doygun ışıklandırma
-  scene.add(new THREE.AmbientLight(0x0D1633, 2.4)); // Derin mavi ambient
-  const col = new THREE.Color(product.colors[0].hex);
+  const quickCartBtn = document.getElementById('qv-cart-quick-btn');
+  if (quickCartBtn) {
+    const newBtn = quickCartBtn.cloneNode(true);
+    quickCartBtn.parentNode.replaceChild(newBtn, quickCartBtn);
+    newBtn.addEventListener('click', () => {
+      addToCart(p.id, newBtn);
+    });
+  }
 
-  const keyLight  = new THREE.PointLight(0xFFFFFF, 5.0, 28);  // Çok güçlü beyaz ürün ışığı
-  keyLight.position.set(3, 5, 4);
-  scene.add(keyLight);
-
-  const fillLight = new THREE.PointLight(0x7B2FFF, 2.8, 20); // Dramatik mor dolgu
-  fillLight.position.set(-4, -2, 2);
-  scene.add(fillLight);
-
-  const rimLight = new THREE.DirectionalLight(0xC8D8FF, 1.2); // Güçlü rim ışık
-  rimLight.position.set(0, 8, -6);
-  scene.add(rimLight);
-
-  const topLight = new THREE.PointLight(0xFFFFFF, 1.0, 15); // Üst dolgu
-  topLight.position.set(0, 6, 0);
-  scene.add(topLight);
-
-  // Build model
-  const group = new THREE.Group();
-  product.buildFn(group, col);
-  scene.add(group);
-
-  // Floor grid — ince ama görünür
-  const gridGeo = new THREE.PlaneGeometry(7, 7, 12, 12);
-  const gridMat = new THREE.MeshBasicMaterial({ color: 0x1a2a5e, wireframe: true, transparent: true, opacity: 0.06 });
-  const grid = new THREE.Mesh(gridGeo, gridMat);
-  grid.rotation.x = -Math.PI / 2;
-  grid.position.y = -1.8;
-  scene.add(grid);
-
-  // Store state
-  const state = {
-    group, keyLight, gridMat,
-    colorable: group.userData.colorable || {},
-    selectedMat: product.defaultMaterial,
-    selectedQual: product.defaultQuality,
-    basePrice: product.price,
-    accentColor: product.accentColor,
-  };
-  cardStates.set(product.id, state);
-
-  // Drag
-  let isDragging = false, prevX = 0, prevY = 0, velX = 0, velY = 0;
-  canvas.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; canvas.style.cursor = 'grabbing'; });
-  window.addEventListener('mouseup',   () => { isDragging = false; canvas.style.cursor = 'grab'; });
-  window.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    velY = (e.clientX - prevX) * 0.009; velX = (e.clientY - prevY) * 0.009;
-    prevX = e.clientX; prevY = e.clientY;
+  const prices = p.availableMaterials.map(mid => {
+    const matMult = MATERIALS_DB[mid].mult;
+    const minQ = Math.min(...QUALITIES_DB.map(q => q.mult));
+    const maxQ = Math.max(...QUALITIES_DB.map(q => q.mult));
+    return {
+      min: Math.round(p.price * matMult * minQ),
+      max: Math.round(p.price * matMult * maxQ),
+    };
   });
-  canvas.addEventListener('touchstart', e => { isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY; }, { passive: true });
-  canvas.addEventListener('touchmove',  e => {
-    if (!isDragging) return;
-    velY = (e.touches[0].clientX - prevX) * 0.009; velX = (e.touches[0].clientY - prevY) * 0.009;
-    prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
-  }, { passive: true });
-  canvas.addEventListener('touchend', () => { isDragging = false; });
-  canvas.style.cursor = 'grab';
+  const minPrice = Math.min(...prices.map(pr => pr.min));
+  const maxPrice = Math.max(...prices.map(pr => pr.max));
+  document.getElementById('qv-price-val').textContent = `₺${minPrice} - ₺${maxPrice}`;
 
-  let hovered = false;
-  canvas.closest('.shop-card')?.addEventListener('mouseenter', () => { hovered = true; });
-  canvas.closest('.shop-card')?.addEventListener('mouseleave', () => { hovered = false; });
+  const colorContainer = document.getElementById('qv-color-swatches');
+  colorContainer.innerHTML = '';
+  let selectedHex = p.colors[0].hex;
+  
+  p.colors.forEach((c, idx) => {
+    const btn = document.createElement('button');
+    btn.className = `qv-color-swatch ${idx === 0 ? 'active' : ''}`;
+    btn.style.backgroundColor = c.hex;
+    btn.title = c.name;
+    btn.addEventListener('click', () => {
+      colorContainer.querySelectorAll('.qv-color-swatch').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedHex = c.hex;
+      document.getElementById('qv-selected-color-name').textContent = c.name;
+      updateQVModelColor(c.hex);
+    });
+    colorContainer.appendChild(btn);
+  });
+  document.getElementById('qv-selected-color-name').textContent = p.colors[0].name;
 
-  // Loop
-  const clock = new THREE.Clock();
-  let rafId, active = false;
+  // Viewport Handling
+  const canvas = document.getElementById('quickview-canvas');
+  const canvasControls = modal.querySelector('.shop-modal-canvas-controls');
+  const wrap = canvas.parentElement;
 
-  new IntersectionObserver(entries => {
-    entries.forEach(e => { active = e.isIntersecting; if (active && !rafId) loop(); });
-  }, { threshold: 0.05 }).observe(canvas);
-
-  function loop() {
-    if (!active) { rafId = null; return; }
-    rafId = requestAnimationFrame(loop);
-    const t = clock.getElapsedTime();
-    const spd = hovered ? 0.020 : 0.008;
-
-    if (!isDragging) {
-      group.rotation.y += spd;
-      group.rotation.x = Math.sin(t * 0.35) * 0.10;
-    } else {
-      group.rotation.y += velY;
-      group.rotation.x += velX;
-    }
-    velX *= 0.86; velY *= 0.86;
-    // Daha sakin ışık titreşimi — göz yormaz
-    keyLight.intensity = 3.0 + Math.sin(t * 1.4) * 0.28;
-    renderer.render(scene, camera);
+  // Clear any existing preview image
+  let existingImg = wrap.querySelector('.qv-preview-img');
+  if (existingImg) {
+    existingImg.remove();
   }
 
-  window.addEventListener('beforeunload', () => { cancelAnimationFrame(rafId); renderer.dispose(); });
+  if (p.id === 'custom-upload') {
+    canvas.style.display = 'block';
+    if (canvasControls) canvasControls.style.display = 'flex';
+    initQuickView3D(p, selectedHex);
+  } else {
+    canvas.style.display = 'none';
+    if (canvasControls) canvasControls.style.display = 'none';
+    cleanupQuickView3D();
+
+    const img = document.createElement('img');
+    img.className = 'qv-preview-img';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '12px';
+    img.src = p.thumbnail;
+    wrap.appendChild(img);
+  }
 }
 
-// ── Color update ──────────────────────────────────────
-function updateModelColor(productId, hexColor) {
-  const state = cardStates.get(productId);
-  if (!state) return;
-  const c = new THREE.Color(hexColor);
-  state.keyLight.color.set(c);
-  state.gridMat.color.set(c);
-  const { primaryMats = [], accentMats = [] } = state.colorable;
-  primaryMats.forEach(m => {
-    m.emissive.set(c);
-    m.emissiveIntensity = 0.10;
-    m.specular.set(c);
+function initQuickView3D(p, initialHex) {
+  cleanupQuickView3D();
+
+  const canvas = document.getElementById('quickview-canvas');
+  const wrap = canvas.parentElement;
+  if (!canvas || !wrap) return;
+
+  qvScene = new THREE.Scene();
+  qvScene.background = new THREE.Color(0x060810);
+
+  qvCamera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+  qvCamera.position.set(0, 0.6, 5.2);
+
+  qvRenderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  qvRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  qvRenderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
+  function resize() {
+    const w = wrap.offsetWidth || 350;
+    const h = wrap.offsetHeight || 300;
+    if (w === 0 || h === 0) return;
+    qvRenderer.setSize(w, h, false);
+    qvCamera.aspect = w / h;
+    qvCamera.updateProjectionMatrix();
+  }
+  
+  requestAnimationFrame(() => {
+    resize();
+    new ResizeObserver(resize).observe(wrap);
   });
-  accentMats.forEach(m => m.color.set(c));
+
+  qvControls = new OrbitControls(qvCamera, canvas);
+  qvControls.enableDamping = true;
+  qvControls.dampingFactor = 0.07;
+  qvControls.autoRotate = qvAutoRotate;
+  qvControls.autoRotateSpeed = 1.5;
+  qvControls.target.set(0, 0, 0);
+
+  qvScene.add(new THREE.AmbientLight(0x0D1633, 2.8));
+
+  const keyLight = new THREE.DirectionalLight(0xfff8f0, 4.0);
+  keyLight.position.set(4, 6, 5);
+  qvScene.add(keyLight);
+
+  const fillLight = new THREE.DirectionalLight(0xf0f5ff, 2.0);
+  fillLight.position.set(-5, 1, 3);
+  qvScene.add(fillLight);
+
+  const rimLight = new THREE.PointLight(0xddeeff, 2.5, 40);
+  rimLight.position.set(0, 5, -5);
+  qvScene.add(rimLight);
+
+  const gridGeo = new THREE.PlaneGeometry(6, 6, 10, 10);
+  const gridMat = new THREE.MeshBasicMaterial({ color: 0x1d2c60, wireframe: true, transparent: true, opacity: 0.12 });
+  const grid = new THREE.Mesh(gridGeo, gridMat);
+  grid.rotation.x = -Math.PI / 2;
+  qvScene.add(grid);
+
+  qvModelGroup = new THREE.Group();
+  const col = new THREE.Color(initialHex);
+  try {
+    const buildFn = p.buildFn || buildCustomUpload;
+    buildFn(qvModelGroup, col);
+  } catch (err) {
+    console.error('[Quick View 3D] Build error:', err);
+  }
+  qvScene.add(qvModelGroup);
+
+  const rotBtn = document.getElementById('qv-ctrl-rotate');
+  if (rotBtn) {
+    rotBtn.classList.toggle('active', qvAutoRotate);
+    rotBtn.textContent = qvAutoRotate ? '↺ Oto' : '⏸ Dur';
+    
+    const newRotBtn = rotBtn.cloneNode(true);
+    rotBtn.parentNode.replaceChild(newRotBtn, rotBtn);
+    newRotBtn.addEventListener('click', () => {
+      qvAutoRotate = !qvAutoRotate;
+      qvControls.autoRotate = qvAutoRotate;
+      newRotBtn.classList.toggle('active', qvAutoRotate);
+      newRotBtn.textContent = qvAutoRotate ? '↺ Oto' : '⏸ Dur';
+    });
+  }
+
+  const resetBtn = document.getElementById('qv-ctrl-reset');
+  if (resetBtn) {
+    const newResetBtn = resetBtn.cloneNode(true);
+    resetBtn.parentNode.replaceChild(newResetBtn, resetBtn);
+    newResetBtn.addEventListener('click', () => {
+      qvControls.reset();
+      qvCamera.position.set(0, 0.6, 5.2);
+    });
+  }
+
+  qvClock = new THREE.Clock();
+  
+  function qvLoop() {
+    if (!qvScene) return;
+    qvRafId = requestAnimationFrame(qvLoop);
+    qvControls.update();
+    qvRenderer.render(qvScene, qvCamera);
+  }
+  
+  qvLoop();
+}
+
+function updateQVModelColor(hex) {
+  if (!qvModelGroup) return;
+  const newCol = new THREE.Color(hex);
+  qvModelGroup.traverse(obj => {
+    if (obj.isMesh && obj.material) {
+      if (Array.isArray(obj.material)) {
+        obj.material.forEach(m => { if (m.color) m.color.set(newCol); });
+      } else if (obj.material.color) {
+        obj.material.color.set(newCol);
+      }
+    }
+  });
+}
+
+function cleanupQuickView3D() {
+  if (qvRafId) {
+    cancelAnimationFrame(qvRafId);
+    qvRafId = null;
+  }
+  if (qvRenderer) {
+    qvRenderer.dispose();
+    qvRenderer = null;
+  }
+  if (qvControls) {
+    qvControls.dispose();
+    qvControls = null;
+  }
+  if (qvScene) {
+    qvScene.traverse(obj => {
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) {
+        if (Array.isArray(obj.material)) {
+          obj.material.forEach(m => m.dispose());
+        } else {
+          obj.material.dispose();
+        }
+      }
+    });
+    qvScene = null;
+  }
+  qvCamera = null;
+  qvModelGroup = null;
+}
+
+function closeQuickView() {
+  const modal = document.getElementById('shop-quickview-modal');
+  if (!modal) return;
+  modal.setAttribute('aria-hidden', 'true');
+  modal.classList.remove('show');
+  document.body.style.overflow = '';
+  cleanupQuickView3D();
 }
 
 // ══════════════════════════════════════════════════════
@@ -486,7 +2506,6 @@ function updateModelColor(productId, hexColor) {
 // ══════════════════════════════════════════════════════
 
 function makePrimaryMat(col) {
-  // Düz renk — MeshLambertMaterial (tok, sade)
   return new THREE.MeshLambertMaterial({ color: col });
 }
 function makeAccentMat(col, opacity = 0.90) {
@@ -1278,143 +3297,7 @@ function buildHexStorage(group, col) {
 }
 
 // ══════════════════════════════════════════════════════
-// COLOR PICKERS
 // ══════════════════════════════════════════════════════
-function initColorPickers() {
-  document.querySelectorAll('.color-swatch').forEach(swatch => {
-    swatch.addEventListener('click', () => {
-      const pid = swatch.dataset.product;
-      const hex = swatch.dataset.hex;
-      const name = swatch.dataset.name;
-
-      // Update UI active state
-      document.querySelectorAll(`.color-swatch[data-product="${pid}"]`).forEach(s => s.classList.remove('active'));
-      swatch.classList.add('active');
-
-      // Update label
-      const label = document.getElementById(`color-label-${pid}`);
-      if (label) label.textContent = name;
-
-      // Update 3D model
-      updateModelColor(pid, hex);
-
-      // Update price display accent color
-      const priceEl = document.getElementById(`price-${pid}`);
-      const totalEl = document.getElementById(`breakdown-total-${pid}`);
-      if (priceEl) priceEl.style.color = hex;
-      if (totalEl) totalEl.style.color = hex;
-    });
-  });
-}
-
-// ══════════════════════════════════════════════════════
-// MATERIAL + QUALITY SELECTORS
-// ══════════════════════════════════════════════════════
-function initMaterialQualitySelectors() {
-  // Material chips
-  document.querySelectorAll('.mat-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const pid = chip.dataset.product;
-      const mid = chip.dataset.mat;
-      document.querySelectorAll(`.mat-chip[data-product="${pid}"]`).forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-
-      const state = cardStates.get(pid);
-      if (state) state.selectedMat = mid;
-
-      // Update description
-      const descEl = document.getElementById(`mat-desc-${pid}`);
-      if (descEl) descEl.textContent = MATERIALS_DB[mid].desc;
-
-      recalcPrice(pid);
-    });
-  });
-
-  // Quality chips
-  document.querySelectorAll('.qual-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const pid = chip.dataset.product;
-      const qid = chip.dataset.qual;
-      document.querySelectorAll(`.qual-chip[data-product="${pid}"]`).forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-
-      const state = cardStates.get(pid);
-      if (state) state.selectedQual = qid;
-
-      recalcPrice(pid);
-    });
-  });
-
-  // AI customize button
-  document.querySelectorAll('.shop-ai-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      const name = btn.dataset.name;
-      // scroll to AI section & pre-fill
-      document.getElementById('ai')?.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => {
-        const inp = document.getElementById('ai-input');
-        if (inp) {
-          inp.value = `${name} için özel tasarım istiyorum`;
-          inp.dispatchEvent(new Event('input'));
-          inp.focus();
-        }
-      }, 600);
-      e.stopPropagation();
-    });
-  });
-}
-
-function recalcPrice(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  const state   = cardStates.get(productId);
-  if (!product || !state) return;
-
-  const mat  = MATERIALS_DB[state.selectedMat];
-  const qual = QUALITIES_DB.find(q => q.id === state.selectedQual);
-  const total = Math.round(product.price * mat.mult * qual.mult);
-
-  // Update displayed price
-  const priceEl = document.getElementById(`price-${productId}`);
-  if (priceEl) priceEl.textContent = `₺${total}`;
-
-  // Update breakdown
-  const bd = document.getElementById(`breakdown-${productId}`);
-  if (bd) {
-    bd.querySelector('.breakdown-row:nth-child(2) span:last-child').textContent = `×${mat.mult.toFixed(2)}`;
-    bd.querySelector('.breakdown-row:nth-child(2) span:first-child').textContent = `Malzeme (${mat.name})`;
-    bd.querySelector('.breakdown-row:nth-child(3) span:last-child').textContent = `×${qual.mult.toFixed(2)}`;
-    bd.querySelector('.breakdown-row:nth-child(3) span:first-child').textContent = `Kalite (${qual.name})`;
-    const totalSpan = document.getElementById(`breakdown-total-${productId}`);
-    if (totalSpan) totalSpan.textContent = `₺${total}`;
-  }
-}
-
-// ══════════════════════════════════════════════════════
-// FILTERS + SORT
-// ══════════════════════════════════════════════════════
-function initFilters() {
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.shop-filter-btn');
-    if (!btn) return;
-    document.querySelectorAll('.shop-filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const f = btn.dataset.filter;
-    const shopProducts = PRODUCTS.filter(p => p.id !== 'custom-upload');
-    shopFilteredProducts = f === 'all' ? shopProducts : shopProducts.filter(p => p.category === f);
-    renderShopPage(1);
-  });
-}
-
-function sortProducts(mode) {
-  shopFilteredProducts = [...shopFilteredProducts];
-  shopFilteredProducts.sort((a, b) => {
-    if (mode === 'price-asc')  return a.price - b.price;
-    if (mode === 'price-desc') return b.price - a.price;
-    if (mode === 'rating')     return b.rating - a.rating;
-    return 0;
-  });
-  renderShopPage(1);
-}
 
 // ══════════════════════════════════════════════════════
 // CART
@@ -1457,7 +3340,6 @@ function showToast(msg) {
 }
 
 export {
-  PRODUCTS,
   buildCustomUpload,
   buildDroneFrame,
   buildGearSet,
