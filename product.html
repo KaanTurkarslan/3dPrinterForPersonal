@@ -323,6 +323,130 @@
       .product-viewer-col { position: static; }
       .product-canvas-wrap { aspect-ratio: 4/3; }
     }
+    /* ── Filament Cost Calculator ── */
+    .filament-calc {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(22,27,39,0.8);
+      padding: 22px;
+      margin-top: 4px;
+    }
+    .filament-calc-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .filament-calc-title .live-badge {
+      font-size: 0.6rem; padding: 2px 7px;
+      background: rgba(34,197,94,0.15); color: #22C55E;
+      border: 1px solid rgba(34,197,94,0.3); border-radius: 100px;
+      font-weight: 600; letter-spacing: 0.04em;
+    }
+    .fc-mat-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+      margin-bottom: 18px;
+    }
+    .fc-mat-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 10px 6px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.02);
+      cursor: pointer; transition: all 0.2s; position: relative;
+    }
+    .fc-mat-btn:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); transform: translateY(-1px); }
+    .fc-mat-btn.active {
+      border-color: var(--fc-accent, #7BAAF7);
+      background: rgba(123,170,247,0.1);
+    }
+    .fc-mat-icon { font-size: 1.3rem; }
+    .fc-mat-name { font-size: 0.65rem; font-weight: 700; color: var(--snow); letter-spacing: 0.02em; }
+    .fc-mat-price-tag {
+      font-size: 0.6rem; font-family: var(--f-mono);
+      color: var(--muted); background: rgba(255,255,255,0.05);
+      padding: 1px 5px; border-radius: 4px;
+    }
+    /* Weight slider */
+    .fc-slider-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .fc-slider-label { font-size: 0.75rem; color: var(--muted); flex-shrink: 0; }
+    .fc-slider {
+      flex: 1; -webkit-appearance: none;
+      height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.1);
+      outline: none; cursor: pointer;
+    }
+    .fc-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px;
+      border-radius: 50%; background: #7BAAF7;
+      box-shadow: 0 0 10px rgba(123,170,247,0.5);
+      cursor: pointer; transition: transform 0.15s;
+    }
+    .fc-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
+    .fc-weight-val {
+      font-family: var(--f-mono); font-size: 0.85rem;
+      font-weight: 700; color: var(--snow); min-width: 48px; text-align: right;
+    }
+    /* Result card */
+    .fc-result {
+      background: linear-gradient(135deg, rgba(10,12,16,0.9), rgba(22,27,39,0.9));
+      border: 1px solid rgba(123,170,247,0.2);
+      border-radius: 14px; padding: 16px;
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 16px; transition: all 0.3s;
+    }
+    .fc-result-left { flex: 1; }
+    .fc-result-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 4px; }
+    .fc-result-cost {
+      font-family: var(--f-mono); font-size: 2rem;
+      font-weight: 800; color: #7BAAF7;
+      line-height: 1; transition: all 0.3s;
+    }
+    .fc-result-sub { font-size: 0.68rem; color: var(--muted); margin-top: 4px; }
+    .fc-result-right { text-align: right; }
+    .fc-per-gram { font-size: 0.72rem; color: var(--muted); }
+    .fc-per-gram-val { font-family: var(--f-mono); font-size: 0.9rem; color: var(--snow); font-weight: 700; }
+    /* Material detail */
+    .fc-detail {
+      border-top: 1px solid var(--border); padding-top: 14px;
+    }
+    .fc-detail-desc {
+      font-size: 0.78rem; line-height: 1.6; color: #94A3B8;
+      margin-bottom: 12px;
+    }
+    .fc-bars { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+    .fc-bar-row { display: flex; align-items: center; gap: 8px; }
+    .fc-bar-label { font-size: 0.67rem; color: var(--muted); min-width: 64px; flex-shrink: 0; }
+    .fc-bar-track {
+      flex: 1; height: 5px; border-radius: 3px;
+      background: rgba(255,255,255,0.07);
+      overflow: hidden;
+    }
+    .fc-bar-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .fc-brands { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+    .fc-brand-tag {
+      font-size: 0.62rem; padding: 2px 8px; border-radius: 100px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted); font-weight: 500;
+    }
+    .fc-price-ref {
+      margin-top: 12px; padding: 10px 12px;
+      background: rgba(255,255,255,0.03); border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .fc-price-ref-label { font-size: 0.7rem; color: var(--muted); }
+    .fc-price-ref-val { font-family: var(--f-mono); font-size: 0.82rem; color: var(--snow); font-weight: 600; }
+    .fc-source-note {
+      margin-top: 10px; font-size: 0.62rem; color: #475569;
+      display: flex; align-items: center; gap: 4px;
+    }
+
     @media (max-width: 480px) {
       .product-page { padding: 20px 16px 60px; }
       .mat-grid { grid-template-columns: 1fr; }
@@ -480,6 +604,52 @@
         <div class="config-block">
           <div class="config-block-title">📋 Teknik Özellikler</div>
           <div class="specs-table" id="specs-table"></div>
+        </div>
+
+        <!-- Filament Maliyet Hesaplayıcı -->
+        <div class="filament-calc" id="filament-calc">
+          <div class="filament-calc-title">
+            🧮 Filament Maliyet Hesaplayıcı
+            <span class="live-badge">📊 CANLI FİYAT</span>
+          </div>
+
+          <!-- Filament seçim grid -->
+          <div class="fc-mat-grid" id="fc-mat-grid"></div>
+
+          <!-- Ağırlık slider -->
+          <div class="fc-slider-row">
+            <span class="fc-slider-label">Baskı ağırlığı:</span>
+            <input type="range" id="fc-weight-slider" class="fc-slider"
+              min="10" max="500" step="5" value="100" />
+            <span class="fc-weight-val" id="fc-weight-val">100 g</span>
+          </div>
+
+          <!-- Sonuç kutusu -->
+          <div class="fc-result" id="fc-result">
+            <div class="fc-result-left">
+              <div class="fc-result-label">Tahmini Filament Maliyeti</div>
+              <div class="fc-result-cost" id="fc-cost">₺70</div>
+              <div class="fc-result-sub" id="fc-cost-sub">100g PLA+ · ₺700/kg</div>
+            </div>
+            <div class="fc-result-right">
+              <div class="fc-per-gram">Gram başına</div>
+              <div class="fc-per-gram-val" id="fc-per-gram">₺0.70</div>
+            </div>
+          </div>
+
+          <!-- Malzeme detayı -->
+          <div class="fc-detail">
+            <p class="fc-detail-desc" id="fc-detail-desc"></p>
+            <div class="fc-bars" id="fc-bars"></div>
+            <div class="fc-brands" id="fc-brands"></div>
+            <div class="fc-price-ref">
+              <span class="fc-price-ref-label">📦 Piyasa Fiyatı (1 kg makara)</span>
+              <span class="fc-price-ref-val" id="fc-kg-price">₺700 / kg</span>
+            </div>
+            <div class="fc-source-note">
+              ℹ️ Fiyatlar Trendyol, Hepsiburada ve SAMM Market verileri ortalamasıdır (Haziran 2026)
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -753,7 +923,117 @@
 
         wrap.appendChild(img);
       }
+
+      // ── Filament Maliyet Hesaplayıcı ────────────────────
+      initFilamentCalc();
     }
+
+    function initFilamentCalc() {
+      const ALL_MATS = MATERIALS_DB;
+      const matKeys = Object.keys(ALL_MATS);
+      let fcSelMat = 'pla';
+      let fcWeight = 100;
+
+      const fcGrid = document.getElementById('fc-mat-grid');
+      const fcSlider = document.getElementById('fc-weight-slider');
+      const fcWeightVal = document.getElementById('fc-weight-val');
+      const fcCost = document.getElementById('fc-cost');
+      const fcCostSub = document.getElementById('fc-cost-sub');
+      const fcPerGram = document.getElementById('fc-per-gram');
+      const fcDetailDesc = document.getElementById('fc-detail-desc');
+      const fcBarsEl = document.getElementById('fc-bars');
+      const fcBrandsEl = document.getElementById('fc-brands');
+      const fcKgPrice = document.getElementById('fc-kg-price');
+      const fcResult = document.getElementById('fc-result');
+
+      // Bar tanımları
+      const barDefs = [
+        { key: 'strength',    label: 'Dayanım',    colors: ['#EF4444','#F97316','#F59E0B','#22C55E','#10B981'] },
+        { key: 'flexibility', label: 'Esneklik',   colors: ['#3B82F6','#6366F1','#8B5CF6','#EC4899','#F43F5E'] },
+        { key: 'heatResist',  label: 'Isı Direnci', colors: ['#F59E0B','#F97316','#EF4444','#DC2626','#B91C1C'] },
+        { key: 'difficulty',  label: 'Zorluk',     colors: ['#22C55E','#F59E0B','#F97316','#EF4444','#DC2626'] },
+      ];
+
+      // Butonları oluştur
+      matKeys.forEach(key => {
+        const m = ALL_MATS[key];
+        const btn = document.createElement('button');
+        btn.className = 'fc-mat-btn' + (key === fcSelMat ? ' active' : '');
+        btn.style.setProperty('--fc-accent', m.color);
+        btn.innerHTML = `
+          <span class="fc-mat-icon">${m.icon}</span>
+          <span class="fc-mat-name">${m.name}</span>
+          <span class="fc-mat-price-tag">₺${m.cost100g}/100g</span>`;
+        btn.addEventListener('click', () => {
+          fcGrid.querySelectorAll('.fc-mat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          fcSelMat = key;
+          updateCalc();
+        });
+        fcGrid.appendChild(btn);
+      });
+
+      // Slider
+      fcSlider.addEventListener('input', () => {
+        fcWeight = parseInt(fcSlider.value);
+        fcWeightVal.textContent = fcWeight + ' g';
+        updateCalc();
+      });
+
+      function updateCalc() {
+        const m = ALL_MATS[fcSelMat];
+        const totalCost = (m.pricePerKg / 1000) * fcWeight;
+        const perGram = m.pricePerKg / 1000;
+
+        // Fiyat güncelle
+        fcCost.textContent = '₺' + totalCost.toLocaleString('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+        fcCostSub.textContent = `${fcWeight}g ${m.name} · ₺${m.pricePerKg.toLocaleString('tr-TR')}/kg`;
+        fcPerGram.textContent = '₺' + perGram.toFixed(2);
+        fcKgPrice.textContent = `₺${m.pricePerKg.toLocaleString('tr-TR')} / kg`;
+
+        // Renk teması
+        fcCost.style.color = m.color;
+        fcResult.style.borderColor = m.color + '44';
+
+        // Açıklama
+        fcDetailDesc.textContent = m.longDesc;
+
+        // Barlar
+        fcBarsEl.innerHTML = '';
+        barDefs.forEach(def => {
+          const val = m[def.key]; // 1-5
+          const pct = (val / 5) * 100;
+          const barColor = def.colors[val - 1] || def.colors[def.colors.length - 1];
+          const row = document.createElement('div');
+          row.className = 'fc-bar-row';
+          row.innerHTML = `
+            <span class="fc-bar-label">${def.label}</span>
+            <div class="fc-bar-track">
+              <div class="fc-bar-fill" style="width:0%; background:${barColor}"></div>
+            </div>`;
+          fcBarsEl.appendChild(row);
+          // Animasyonlu dolum
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              row.querySelector('.fc-bar-fill').style.width = pct + '%';
+            });
+          });
+        });
+
+        // Markalar
+        fcBrandsEl.innerHTML = '';
+        (m.brands || []).forEach(brand => {
+          const tag = document.createElement('span');
+          tag.className = 'fc-brand-tag';
+          tag.textContent = brand;
+          fcBrandsEl.appendChild(tag);
+        });
+      }
+
+      // İlk render
+      updateCalc();
+    }
+
 
     // ── 3D Scene ─────────────────────────────────────────
     let sceneRef = null;

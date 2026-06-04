@@ -78,8 +78,21 @@ function renderViewerSection() {
           <div class="viewer-material-section">
             <div class="viewer-option-label">Malzeme</div>
             <div class="viewer-mat-chips">
-              ${['PLA+','PETG','ABS','TPU','CF-PLA','Resin'].map((m, i) => `
-                <button class="viewer-mat-chip ${i===0?'active':''}" data-mat="${m}">${m}</button>
+              ${[
+                {key:'PLA+',    label:'PLA+'},
+                {key:'PETG',    label:'PETG'},
+                {key:'ABS',     label:'ABS'},
+                {key:'TPU',     label:'TPU'},
+                {key:'ASA',     label:'ASA'},
+                {key:'CF-PLA',  label:'CF-PLA'},
+                {key:'Resin',   label:'Resin'},
+                {key:'Silk',    label:'Silk'},
+                {key:'Matte',   label:'Matte'},
+                {key:'Wood',    label:'Wood'},
+                {key:'HIPS',    label:'HIPS'},
+                {key:'Nylon',   label:'Nylon'},
+              ].map((m, i) => `
+                <button class="viewer-mat-chip ${i===0?'active':''}" data-mat="${m.key}">${m.label}</button>
               `).join('')}
             </div>
           </div>
@@ -154,50 +167,109 @@ function renderViewerSection() {
           <div class="eco-card">
             <div class="eco-card-header">BASKI MALİYETİ (100G PLA+)</div>
             <div class="eco-row">
-              <span class="eco-label">Filamix PLA+ Payı</span>
-              <span class="eco-value">~55 TL</span>
+              <span class="eco-label">PLA+ Filament (700 TL/kg)</span>
+              <span class="eco-value">~70 TL</span>
             </div>
             <div class="eco-row">
               <span class="eco-label">Elektrik (~3 Saat)</span>
-              <span class="eco-value">~4.5 TL</span>
+              <span class="eco-value">~2.7 TL</span>
             </div>
             <div class="eco-row">
-              <span class="eco-label">Bakım & Amortisman</span>
+              <span class="eco-label">Bakım &amp; Amortisman</span>
               <span class="eco-value">~6 TL</span>
             </div>
+            <div class="eco-row" style="border-top:1px solid rgba(255,255,255,0.08);margin-top:8px;padding-top:8px;">
+              <span class="eco-label" style="font-size:0.68rem;color:#64748B;">💡 Gram Başına Maliyet Tablosu</span>
+            </div>
+            <div class="eco-row"><span class="eco-label">PLA+</span><span class="eco-value">₺0.70/g</span></div>
+            <div class="eco-row"><span class="eco-label">PETG</span><span class="eco-value">₺0.90/g</span></div>
+            <div class="eco-row"><span class="eco-label">ABS</span><span class="eco-value">₺0.75/g</span></div>
+            <div class="eco-row"><span class="eco-label">TPU</span><span class="eco-value">₺1.10/g</span></div>
+            <div class="eco-row"><span class="eco-label">ASA</span><span class="eco-value">₺0.85/g</span></div>
+            <div class="eco-row"><span class="eco-label">CF-PLA</span><span class="eco-value">₺1.50/g</span></div>
+            <div class="eco-row"><span class="eco-label">Resin</span><span class="eco-value">₺1.00/g</span></div>
+            <div class="eco-row"><span class="eco-label">Silk PLA</span><span class="eco-value">₺1.00/g</span></div>
+            <div class="eco-row"><span class="eco-label">Matte PLA</span><span class="eco-value">₺0.75/g</span></div>
+            <div class="eco-row"><span class="eco-label">Wood PLA</span><span class="eco-value">₺1.10/g</span></div>
+            <div class="eco-row"><span class="eco-label">HIPS</span><span class="eco-value">₺0.80/g</span></div>
+            <div class="eco-row"><span class="eco-label">Nylon PA</span><span class="eco-value">₺1.60/g</span></div>
             <div class="eco-total">
-              <span>Toplam Gider</span>
               <span>~65.5 TL</span>
             </div>
           </div>
 
           <!-- Column 2: Calculator -->
-          <div class="eco-card eco-card-dark">
-            <div class="eco-card-header">MALİYET HESAPLAYICI</div>
-            
-            <div class="eco-input-group">
-              <label>FİLAMENT FİYATI (1KG / TL)</label>
-              <input type="number" id="calc-fil-price" value="550" />
+          <div class="eco-card eco-card-dark" style="background:linear-gradient(145deg,#0F1623,#161E2E);border:1px solid rgba(123,170,247,0.2);position:relative;overflow:hidden;">
+            <!-- Subtle glow top -->
+            <div style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:80px;background:radial-gradient(ellipse,rgba(123,170,247,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+
+            <div class="eco-card-header" style="font-size:0.7rem;letter-spacing:0.1em;color:#7BAAF7;margin-bottom:18px;">🧮 MALİYET HESAPLAYICI</div>
+
+            <!-- Filament buton grid -->
+            <div style="margin-bottom:16px;">
+              <div style="font-size:0.65rem;color:#64748B;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Filament Seç</div>
+              <div id="eco-mat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;"></div>
             </div>
-            
-            <div class="eco-input-group">
-              <label>ÜRÜN AĞIRLIĞI (GRAM)</label>
-              <input type="number" id="calc-weight" value="100" />
+
+            <!-- Seçili filament bilgisi -->
+            <div id="eco-selected-banner" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;background:rgba(123,170,247,0.08);border:1px solid rgba(123,170,247,0.2);margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span id="eco-sel-icon" style="font-size:1.2rem;">🌿</span>
+                <div>
+                  <div id="eco-sel-name" style="font-size:0.82rem;font-weight:700;color:#E2E8F0;">PLA+</div>
+                  <div id="eco-sel-desc" style="font-size:0.65rem;color:#64748B;">Kolay baskı · Biyobozunur</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:0.65rem;color:#64748B;">gram başına</div>
+                <div id="eco-sel-pgram" style="font-size:1rem;font-weight:800;color:#7BAAF7;font-family:monospace;">₺0.70</div>
+              </div>
             </div>
-            
-            <div class="eco-input-group">
-              <label>BASKI SÜRESİ (SAAT)</label>
-              <input type="number" id="calc-time" value="3" />
+
+            <!-- Parametreler yan yana -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+              <div class="eco-input-group" style="margin:0;">
+                <label>AĞIRLIK (G)</label>
+                <input type="number" id="calc-weight" value="100" style="padding:10px;font-size:0.9rem;" />
+              </div>
+              <div class="eco-input-group" style="margin:0;">
+                <label>SÜRE (SAAT)</label>
+                <input type="number" id="calc-time" value="3" style="padding:10px;font-size:0.9rem;" />
+              </div>
             </div>
-            
-            <button class="btn-primary eco-calc-btn" id="eco-calc-btn">Hesapla</button>
-            
-            <div class="eco-result-box">
-              <div class="eco-result-label">TAHMİNİ TOPLAM MALİYET</div>
-              <div class="eco-result-value" id="calc-total-cost">59.50 TL</div>
+
+            <!-- Gizli kg fiyat input (JS için) -->
+            <input type="hidden" id="calc-fil-price" value="700" />
+
+            <!-- Hesapla butonu -->
+            <button id="eco-calc-btn" style="width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#3D5278,#5B7AB0);color:#fff;font-size:0.92rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;margin-bottom:14px;">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 20h16a2 2 0 002-2V8a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              Hesapla
+            </button>
+
+            <!-- Sonuç kutusu -->
+            <div id="eco-result-card" style="border-radius:14px;background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(16,185,129,0.05));border:1px solid rgba(34,197,94,0.25);padding:16px;">
+              <div style="font-size:0.62rem;color:#64748B;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">TAHMİNİ TOPLAM MALİYET</div>
+              <div id="calc-total-cost" style="font-size:2.2rem;font-weight:900;color:#22C55E;font-family:monospace;line-height:1;">70.00 TL</div>
+              <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px;">
+                <div style="display:flex;justify-content:space-between;font-size:0.7rem;">
+                  <span style="color:#64748B;">Filament</span>
+                  <span id="eco-breakdown-fil" style="color:#94A3B8;font-family:monospace;">₺70.00</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.7rem;">
+                  <span style="color:#64748B;">Elektrik</span>
+                  <span id="eco-breakdown-elec" style="color:#94A3B8;font-family:monospace;">₺2.70</span>
+                </div>
+                <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0;"></div>
+                <div style="display:flex;justify-content:space-between;font-size:0.7rem;">
+                  <span style="color:#64748B;">Gram başına</span>
+                  <span id="eco-breakdown-pg" style="color:#22C55E;font-family:monospace;font-weight:700;">₺0.70/g</span>
+                </div>
+              </div>
             </div>
-            <p class="eco-disclaimer">Filament + Elektrik (150W/6TL kWh) dahil hesaplanmıştır.</p>
+            <p style="font-size:0.6rem;color:#374151;margin-top:8px;text-align:center;">Filament + Elektrik (150W/6₺ kWh) dahil</p>
           </div>
+
 
           <!-- Column 3: Yearly Savings -->
           <div class="eco-card">
@@ -559,25 +631,112 @@ function initViewerInteractions() {
     showViewerToast('Siparişiniz alındı! En kısa sürede sizinle iletişime geçeceğiz. 🚀');
   });
 
-  // Eco Calculator
-  document.getElementById('eco-calc-btn')?.addEventListener('click', () => {
-    const filPrice = parseFloat(document.getElementById('calc-fil-price')?.value) || 0;
-    const weight = parseFloat(document.getElementById('calc-weight')?.value) || 0;
-    const time = parseFloat(document.getElementById('calc-time')?.value) || 0;
-    
-    // Filament cost: price per kg * (weight / 1000)
-    const filCost = filPrice * (weight / 1000);
-    // Electricity cost: 150W = 0.15kW. 0.15kW * time * 6 TL/kWh = 0.9 * time TL.
+
+  // ── Eco Calculator — Yeni Görsel Hesaplayıcı ────────────────────
+  const ECO_MATS = [
+    { key:'pla',   name:'PLA+',     icon:'🌿', kg:700,  pg:0.70, desc:'Kolay baskı · Biyobozunur',    color:'#22C55E' },
+    { key:'petg',  name:'PETG',     icon:'💧', kg:900,  pg:0.90, desc:'Dayanıklı · Şeffaf seçenek',   color:'#3B82F6' },
+    { key:'abs',   name:'ABS',      icon:'🔧', kg:750,  pg:0.75, desc:'Isıya dayanıklı · Sert',       color:'#F59E0B' },
+    { key:'tpu',   name:'TPU',      icon:'🧲', kg:1100, pg:1.10, desc:'Esnek · Çarpma emici',         color:'#EC4899' },
+    { key:'asa',   name:'ASA',      icon:'☀️', kg:850,  pg:0.85, desc:'UV dayanımlı · Dış mekan',    color:'#F97316' },
+    { key:'cf',    name:'CF-PLA',   icon:'⚡', kg:1500, pg:1.50, desc:'Karbon takviyeli · Ultra sert', color:'#6366F1' },
+    { key:'resin', name:'Resin',    icon:'💎', kg:1000, pg:1.00, desc:'Yüksek detay · SLA/MSLA',      color:'#8B5CF6' },
+    { key:'silk',  name:'Silk',     icon:'✨', kg:1000, pg:1.00, desc:'İpeksi parlaklık · Dekoratif', color:'#F0ABFC' },
+    { key:'matte', name:'Matte',    icon:'🎨', kg:750,  pg:0.75, desc:'Mat yüzey · Modern estetik',   color:'#94A3B8' },
+    { key:'wood',  name:'Wood',     icon:'🪵', kg:1100, pg:1.10, desc:'Ahşap dokulu · Boyanabilir',   color:'#A16207' },
+    { key:'hips',  name:'HIPS',     icon:'🔩', kg:800,  pg:0.80, desc:'ABS destek · Kimyasal çözünür',color:'#D4D4D8' },
+    { key:'nylon', name:'Nylon',    icon:'⚙️', kg:1600, pg:1.60, desc:'Mühendislik sınıfı · PA',      color:'#7C3AED' },
+  ];
+
+  let ecoSelMat = ECO_MATS[0];
+
+  function buildEcoMatGrid() {
+    const grid = document.getElementById('eco-mat-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    ECO_MATS.forEach(mat => {
+      const btn = document.createElement('button');
+      btn.title = mat.name;
+      btn.style.cssText = `
+        display:flex;flex-direction:column;align-items:center;gap:3px;
+        padding:8px 4px;border-radius:10px;cursor:pointer;transition:all 0.18s;
+        border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);
+        font-size:0.58rem;font-weight:700;color:#64748B;
+      `;
+      btn.innerHTML = `<span style="font-size:1.1rem;">${mat.icon}</span><span style="letter-spacing:0.02em;">${mat.name}</span>`;
+      btn.addEventListener('click', () => {
+        ecoSelMat = mat;
+        // Aktif stil
+        grid.querySelectorAll('button').forEach(b => {
+          b.style.borderColor = 'rgba(255,255,255,0.08)';
+          b.style.background = 'rgba(255,255,255,0.03)';
+          b.style.color = '#64748B';
+        });
+        btn.style.borderColor = mat.color + '88';
+        btn.style.background = mat.color + '18';
+        btn.style.color = mat.color;
+        // Banner güncelle
+        updateEcoBanner(mat);
+        // Fiyat input güncelle
+        const priceInput = document.getElementById('calc-fil-price');
+        if (priceInput) priceInput.value = mat.kg;
+        runEcoCalc();
+      });
+      if (mat.key === 'pla') {
+        // Varsayılan aktif
+        setTimeout(() => btn.click(), 50);
+      }
+      grid.appendChild(btn);
+    });
+  }
+
+  function updateEcoBanner(mat) {
+    const icon = document.getElementById('eco-sel-icon');
+    const name = document.getElementById('eco-sel-name');
+    const desc = document.getElementById('eco-sel-desc');
+    const pg   = document.getElementById('eco-sel-pgram');
+    const banner = document.getElementById('eco-selected-banner');
+    if (icon) icon.textContent = mat.icon;
+    if (name) { name.textContent = mat.name; name.style.color = mat.color; }
+    if (desc) desc.textContent = mat.desc;
+    if (pg)   { pg.textContent = `₺${mat.pg.toFixed(2)}`; pg.style.color = mat.color; }
+    if (banner) banner.style.borderColor = mat.color + '44';
+  }
+
+  function runEcoCalc() {
+    const filPrice = parseFloat(document.getElementById('calc-fil-price')?.value) || ecoSelMat.kg;
+    const weight   = parseFloat(document.getElementById('calc-weight')?.value)    || 100;
+    const time     = parseFloat(document.getElementById('calc-time')?.value)      || 3;
+    const filCost  = filPrice * (weight / 1000);
     const elecCost = 0.15 * time * 6;
-    
-    const total = filCost + elecCost;
-    
-    const resultEl = document.getElementById('calc-total-cost');
-    if (resultEl) {
-      resultEl.textContent = total.toFixed(2) + ' TL';
-    }
+    const perGram  = filPrice / 1000;
+    const total    = filCost + elecCost;
+
+    const totalEl = document.getElementById('calc-total-cost');
+    const filEl   = document.getElementById('eco-breakdown-fil');
+    const elecEl  = document.getElementById('eco-breakdown-elec');
+    const pgEl    = document.getElementById('eco-breakdown-pg');
+
+    if (totalEl) { totalEl.textContent = total.toFixed(2) + ' TL'; totalEl.style.color = ecoSelMat.color || '#22C55E'; }
+    if (filEl)   filEl.textContent   = `₺${filCost.toFixed(2)}`;
+    if (elecEl)  elecEl.textContent  = `₺${elecCost.toFixed(2)}`;
+    if (pgEl)    { pgEl.textContent  = `₺${perGram.toFixed(2)}/g`; pgEl.style.color = ecoSelMat.color || '#22C55E'; }
+
+    // Sonuç kutusu rengi güncelle
+    const card = document.getElementById('eco-result-card');
+    if (card) card.style.borderColor = (ecoSelMat.color || '#22C55E') + '44';
+  }
+
+  buildEcoMatGrid();
+  document.getElementById('eco-calc-btn')?.addEventListener('click', runEcoCalc);
+  // Girdi değişince canlı hesapla
+  ['calc-weight','calc-time'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', runEcoCalc);
   });
+  setTimeout(runEcoCalc, 300);
 }
+
+
 
 function handleFile(file) {
   if (!file || !file.name.endsWith('.stl')) {
@@ -700,58 +859,90 @@ function showViewerToast(msg) {
 }
 
 // ══════════════════════════════════════════════════════
-// DYNAMIC PRICING ENGINE WITH 60% PROFIT MARGIN
+// DYNAMIC PRICING ENGINE — Boyut Bazlı Fiyatlandırma
+// Türkiye piyasası 2026 ortalama filament fiyatları
 // ══════════════════════════════════════════════════════
 const FILAMENT_COSTS = {
-  'PLA+':   { pricePerGram: 0.55, density: 1.24 }, // ~550 TL per 1kg roll
-  'PETG':   { pricePerGram: 0.70, density: 1.27 }, // ~700 TL per 1kg roll
-  'ABS':    { pricePerGram: 0.65, density: 1.04 }, // ~650 TL per 1kg roll
-  'TPU':    { pricePerGram: 0.85, density: 1.20 }, // ~850 TL per 1kg roll
-  'CF-PLA': { pricePerGram: 1.30, density: 1.30 }, // ~1300 TL per 1kg roll
-  'Resin':  { pricePerGram: 1.50, density: 1.15 }  // ~1500 TL per 1kg roll
+  // Standart filamentler
+  'PLA+':   { pricePerGram: 0.70, density: 1.24, label: 'PLA+' },
+  'PETG':   { pricePerGram: 0.90, density: 1.27, label: 'PETG' },
+  'ABS':    { pricePerGram: 0.75, density: 1.04, label: 'ABS' },
+  'TPU':    { pricePerGram: 1.10, density: 1.20, label: 'TPU' },
+  'ASA':    { pricePerGram: 0.85, density: 1.07, label: 'ASA' },
+  'CF-PLA': { pricePerGram: 1.50, density: 1.30, label: 'CF-PLA' },
+  'Resin':  { pricePerGram: 1.00, density: 1.15, label: 'Resin' },
+  // Yeni filament çeşitleri
+  'Silk':   { pricePerGram: 1.00, density: 1.24, label: 'Silk PLA' },
+  'Matte':  { pricePerGram: 0.75, density: 1.24, label: 'Matte PLA' },
+  'Wood':   { pricePerGram: 1.10, density: 1.28, label: 'Wood PLA' },
+  'HIPS':   { pricePerGram: 0.80, density: 1.04, label: 'HIPS' },
+  'Nylon':  { pricePerGram: 1.60, density: 1.14, label: 'Nylon PA' },
 };
+
+// Boyut kılavuzu: mm cinsinden baskı alanı (X·Y) ve yükseklik (Z) bazlı fiyat
+// Formül: baskı_alanı_cm² × birim_alan_fiyat + yükseklik_cm × birim_yük_fiyat + malzeme
+const BASE_AREA_PRICE = 1.2;   // ₺ / cm² baskı tabanı
+const BASE_HEIGHT_PRICE = 3.5; // ₺ / cm yükseklik
+const PROFIT_MARGIN = 0.38;    // %62 karlılık (maliyet / 0.38 = satış fiyatı)
 
 function recalculatePrice() {
   const priceEl = document.getElementById('viewer-price');
   if (!priceEl) return;
 
-  if (!viewerState || !viewerState.modelSize) {
-    const basePrices = { 'PLA+': 50, 'PETG': 65, 'ABS': 60, 'TPU': 75, 'CF-PLA': 120, 'Resin': 140 };
-    const mat = viewerState ? viewerState.selectedMaterial : 'PLA+';
-    priceEl.textContent = `₺${basePrices[mat] || 50}+`;
+  const mat = viewerState?.selectedMaterial || 'PLA+';
+  const filInfo = FILAMENT_COSTS[mat] || FILAMENT_COSTS['PLA+'];
+
+  if (!viewerState?.modelSize) {
+    // Boyut yok: sadece malzeme bazlı başlangıç fiyatı
+    const baseCostPer100g = filInfo.pricePerGram * 100;
+    const baseRetail = Math.round(baseCostPer100g / PROFIT_MARGIN);
+    priceEl.textContent = `₺${baseRetail}+`;
     return;
   }
 
-  const size = viewerState.modelSize;
-  const mat = viewerState.selectedMaterial || 'PLA+';
-  const filInfo = FILAMENT_COSTS[mat] || FILAMENT_COSTS['PLA+'];
+  const size = viewerState.modelSize; // mm cinsinden
 
-  // 1. Calculate raw bounding box volume in cm^3
-  const rawVolume = (size.x * size.y * size.z) / 1000;
+  // ── 1. Boyut bazlı fiyat bileşeni ──
+  const areaX_cm = size.x / 10;   // mm → cm
+  const areaY_cm = size.y / 10;
+  const heightZ_cm = size.z / 10;
 
-  // 2. Adjust density factor based on overall size (smaller parts have higher wall ratio / infill density)
-  let densityMultiplier = 0.22; // default solidity factor (shells + infill)
-  if (rawVolume > 100) densityMultiplier = 0.16;
-  if (rawVolume > 500) densityMultiplier = 0.11;
+  // Baskı tabanı alanı (X × Y cm²)
+  const printArea_cm2 = areaX_cm * areaY_cm;
+  const areaPrice = printArea_cm2 * BASE_AREA_PRICE;
 
-  // 3. Calculate estimated weight in grams
-  const estWeight = Math.max(1.5, rawVolume * densityMultiplier * filInfo.density);
+  // Yükseklik katkısı
+  const heightPrice = heightZ_cm * BASE_HEIGHT_PRICE;
 
-  // 4. Calculate printing time in hours (approx 18 grams per hour speed)
-  const estTimeHours = Math.max(0.4, estWeight / 18);
+  // ── 2. Malzeme (filament) maliyet bileşeni ──
+  const rawVolume_cm3 = (size.x * size.y * size.z) / 1000;
+  // Doluluk katsayısı: küçük parçalar daha katı
+  let solidFactor = 0.22;
+  if (rawVolume_cm3 > 100) solidFactor = 0.16;
+  if (rawVolume_cm3 > 500) solidFactor = 0.11;
+  const estWeight_g = Math.max(2, rawVolume_cm3 * solidFactor * filInfo.density);
+  const materialCost = estWeight_g * filInfo.pricePerGram;
 
-  // 5. Electricity cost (150W printer, 6 TL per kWh)
+  // ── 3. Elektrik maliyeti ──
+  const estTimeHours = Math.max(0.5, estWeight_g / 18);
   const electricityCost = estTimeHours * 0.15 * 6;
 
-  // 6. Filament material cost
-  const materialCost = estWeight * filInfo.pricePerGram;
+  // ── 4. Toplam maliyet → satış fiyatı ──
+  const totalCost = materialCost + electricityCost + areaPrice + heightPrice;
+  const salePrice = totalCost / PROFIT_MARGIN;
 
-  // 7. Total manufacturing cost
-  const totalCost = materialCost + electricityCost;
+  // ── 5. Boyut özet bilgisi ──
+  const breakdown = `${size.x.toFixed(0)}×${size.y.toFixed(0)}×${size.z.toFixed(0)}mm · ~${estWeight_g.toFixed(0)}g`;
 
-  // 8. Retail price with a 60% profit margin (Price = Cost / 0.40)
-  const price = totalCost / 0.40;
+  priceEl.textContent = `₺${Math.round(salePrice)}`;
 
-  // Render price rounded to nearest integer
-  priceEl.textContent = `₺${Math.round(price)}`;
+  // Yardımcı bilgi: breakdown satırı göster
+  let subEl = document.getElementById('viewer-price-sub');
+  if (!subEl) {
+    subEl = document.createElement('div');
+    subEl.id = 'viewer-price-sub';
+    subEl.style.cssText = 'font-size:0.6rem;color:#64748B;font-family:monospace;margin-top:2px;';
+    priceEl.parentNode.appendChild(subEl);
+  }
+  subEl.textContent = breakdown;
 }
